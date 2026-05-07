@@ -73,13 +73,13 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center overflow-y-auto scrollbar-hide pb-24">
+    <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center overflow-y-auto scrollbar-hide pb-24 lg:pb-8">
       {/* Header Section */}
-      <header className="w-full max-w-md px-6 py-6 flex items-center justify-between z-50 bg-white shadow-xs">
+      <header className="w-full max-w-4xl px-6 py-6 flex items-center justify-between z-50 bg-white md:bg-transparent md:shadow-none md:mt-2">
         <div className="flex items-center gap-3">
           <div>
             <span className="text-slate-400 text-xs font-medium">{getGreeting()},</span>
-            <h1 className="text-lg font-black text-slate-900 leading-tight flex items-center gap-1">
+            <h1 className="text-lg md:text-2xl font-black text-slate-900 leading-tight flex items-center gap-1">
               {user?.name || 'Membro'} 👋
             </h1>
           </div>
@@ -87,16 +87,16 @@ export const Dashboard: React.FC = () => {
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setActiveTab('profile')} 
-            className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-sm active:scale-95 transition-transform"
+            className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-sm active:scale-95 transition-transform"
           >
-            <span className="font-bold text-lg leading-none">
+            <span className="font-bold text-lg md:text-xl leading-none">
               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </span>
           </button>
         </div>
       </header>
 
-      <main className="w-full max-w-md flex-1 py-6 pb-20">
+      <main className="w-full max-w-4xl flex-1 py-6 pb-20 md:pb-6">
         <AnimatePresence mode="wait">
           {activeTab === 'home' ? (
             <motion.div 
@@ -104,141 +104,142 @@ export const Dashboard: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="px-6 space-y-5"
+              className="px-6 space-y-6"
             >
-              {/* Daily Motivation */}
-              <div className="bg-white border border-slate-100 rounded-3xl p-4 px-5 flex items-center justify-between shadow-sm">
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-primary-green font-bold text-sm leading-tight italic">Motivação do Dia</h3>
-                  <p className="text-base font-medium text-slate-700 leading-tight py-0.5 mt-0.5">
-                     🌟 {motivation}
-                  </p>
-                </div>
-                <button 
-                  onClick={() => setIsLiked(!isLiked)}
-                  className="text-primary-green p-1 ml-3 active:scale-125 transition-transform"
-                >
-                  <Heart size={24} fill={isLiked ? "currentColor" : "none"} strokeWidth={2} />
-                </button>
-              </div>
-
-              {/* Water Section */}
-              <div 
-                onClick={() => setIsWaterOpen(true)}
-                className="bg-white border border-slate-100 rounded-3xl p-4 flex items-center justify-between shadow-sm cursor-pointer"
-              >
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="w-10 h-10 bg-sky-50 rounded-xl flex items-center justify-center text-sky-500">
-                    <Droplets size={20} />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-sm font-bold text-slate-800">Água</span>
-                      <span className="text-sm font-bold text-sky-400">{(waterIntake / 200).toFixed(0)} / 10 copos</span>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                {/* Left Column: Motivation, Water and Quick Actions */}
+                <div className="lg:col-span-12 xl:col-span-4 space-y-6">
+                  {/* Daily Motivation */}
+                  <div className="bg-white border border-slate-100 rounded-[2rem] p-5 flex items-center justify-between shadow-sm">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-primary-green font-bold text-xs uppercase tracking-widest leading-tight italic mb-1">Motivação do Dia</h3>
+                      <p className="text-sm md:text-base font-medium text-slate-700 leading-tight">
+                         🌟 {motivation}
+                      </p>
                     </div>
-                    <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
-                      <motion.div 
-                         initial={{ width: 0 }}
-                         animate={{ width: `${Math.min((waterIntake / waterGoal) * 100, 100)}%` }}
-                         className="h-full bg-sky-400 rounded-full"
-                      />
+                    <button 
+                      onClick={() => setIsLiked(!isLiked)}
+                      className="text-primary-green p-1 ml-3 active:scale-125 transition-transform"
+                    >
+                      <Heart size={24} fill={isLiked ? "currentColor" : "none"} strokeWidth={2} />
+                    </button>
+                  </div>
+
+                  {/* Water Section */}
+                  <div 
+                    onClick={() => setIsWaterOpen(true)}
+                    className="bg-white border border-slate-100 rounded-[2rem] p-5 flex items-center justify-between shadow-sm cursor-pointer hover:border-sky-200 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="w-12 h-12 bg-sky-50 rounded-2xl flex items-center justify-center text-sky-500">
+                        <Droplets size={24} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-bold text-slate-800">Água</span>
+                          <span className="text-xs font-bold text-sky-400">{(waterIntake / 200).toFixed(0)} / 10 copos</span>
+                        </div>
+                        <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
+                          <motion.div 
+                             initial={{ width: 0 }}
+                             animate={{ width: `${Math.min((waterIntake / waterGoal) * 100, 100)}%` }}
+                             className="h-full bg-sky-400 rounded-full"
+                          />
+                        </div>
+                      </div>
                     </div>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addWater(200);
+                      }}
+                      className="w-12 h-12 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center active:scale-90 transition-all ml-4 shrink-0 shadow-lg shadow-black/10"
+                    >
+                      <Plus size={24} />
+                    </button>
                   </div>
                 </div>
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    addWater(200);
-                  }}
-                  className="w-10 h-10 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center active:scale-90 transition-all ml-4 shrink-0"
-                >
-                  <Plus size={20} />
-                </button>
-              </div>
 
-              {/* Main Feature Cards */}
-              <div className="grid grid-cols-2 gap-4">
-                <button 
-                  onClick={() => setIsScannerOpen(true)}
-                  className="bg-linear-to-br from-emerald-400 to-primary-green text-white p-5 rounded-3xl flex flex-col gap-6 text-left shadow-lg shadow-emerald-500/20 relative overflow-hidden active:scale-95 transition-all group"
-                >
-                  <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Camera size={32} />
-                  </div>
-                  <div className="flex items-center justify-between w-full">
-                    <div className="space-y-1">
-                      <h4 className="font-black text-sm leading-tight uppercase italic text-white flex items-center gap-1">
-                        Analisar <br /> Refeição
+                {/* Main Feature Cards - Now Grid Responsive */}
+                <div className="lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button 
+                    onClick={() => setIsScannerOpen(true)}
+                    className="bg-linear-to-br from-emerald-400 to-primary-green text-white p-6 rounded-[2.5rem] flex items-center gap-6 text-left shadow-lg shadow-emerald-500/20 relative overflow-hidden active:scale-[0.98] transition-all group"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                      <Camera size={38} />
+                    </div>
+                    <div className="flex flex-col justify-center flex-1">
+                      <h4 className="font-black text-lg md:text-xl leading-tight uppercase italic text-white mb-1">
+                        Analisar Refeição
                       </h4>
-                      <p className="text-[10px] text-white/80 font-medium tracking-tight">Escaneie <br /> sua comida</p>
+                      <p className="text-xs md:text-sm text-white/80 font-medium tracking-tight">Escaneie sua comida agora</p>
                     </div>
-                    <ChevronRight size={18} className="text-white/60" />
-                  </div>
-                </button>
+                    <ChevronRight size={24} className="text-white/60 ml-auto" />
+                  </button>
 
-                <button 
-                  onClick={() => setIsChatOpen(true)}
-                  className="bg-linear-to-br from-sky-400 to-primary-blue text-white p-5 rounded-3xl flex flex-col gap-6 text-left shadow-lg shadow-sky-500/20 relative overflow-hidden active:scale-95 transition-all group"
-                >
-                  <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <MessageSquare size={32} />
-                  </div>
-                  <div className="flex items-center justify-between w-full">
-                    <div className="space-y-1">
-                      <h4 className="font-black text-sm leading-tight uppercase italic text-white">Chat IA</h4>
-                      <p className="text-[10px] text-white/80 font-medium tracking-tight">Tire <br /> dúvidas <br /> agora</p>
+                  <button 
+                    onClick={() => setIsChatOpen(true)}
+                    className="bg-linear-to-br from-sky-400 to-primary-blue text-white p-6 rounded-[2.5rem] flex items-center gap-6 text-left shadow-lg shadow-sky-500/20 relative overflow-hidden active:scale-[0.98] transition-all group"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                      <MessageSquare size={38} />
                     </div>
-                    <ChevronRight size={18} className="text-white/60" />
-                  </div>
-                </button>
-              </div>
+                    <div className="flex flex-col justify-center flex-1">
+                      <h4 className="font-black text-lg md:text-xl leading-tight uppercase italic text-white mb-1">Chat IA</h4>
+                      <p className="text-xs md:text-sm text-white/80 font-medium tracking-tight">Tire dúvidas agora</p>
+                    </div>
+                    <ChevronRight size={24} className="text-white/60 ml-auto" />
+                  </button>
+                </div>
 
-              {/* Action Grid */}
-              <div className="grid grid-cols-3 gap-3">
-                <DashboardGridItem 
-                  icon={<Utensils />} color="text-emerald-500" bgColor="bg-emerald-50" 
-                  label="Dieta" desc="Planos personalizados" onClick={() => setIsDietOpen(true)} 
-                />
-                <DashboardGridItem 
-                  icon={<BookOpen />} color="text-orange-500" bgColor="bg-orange-50" 
-                  label="Receitas" desc="Deliciosas e saudáveis" onClick={() => setIsRecipesOpen(true)} 
-                />
-                <DashboardGridItem 
-                  icon={<Dumbbell />} color="text-emerald-500" bgColor="bg-emerald-50" 
-                  label="Treinos" desc="Exercícios para você" onClick={() => setIsWorkoutOpen(true)} 
-                />
-                
-                <DashboardGridItem 
-                  icon={<Clock />} color="text-emerald-500" bgColor="bg-emerald-50" 
-                  label="Jejum" desc="Acompanhe seu jejum" onClick={() => setIsFastingOpen(true)} 
-                />
-                <DashboardGridItem 
-                  icon={<Target />} color="text-emerald-500" bgColor="bg-emerald-50" 
-                  label="Desafios" desc="Supere seus limites" onClick={() => {
-                    setChallengesInitialTab('challenges');
-                    setIsChallengesOpen(true);
-                  }} 
-                />
-                <DashboardGridItem 
-                  icon={<ShoppingCart />} color="text-sky-500" bgColor="bg-sky-50" 
-                  label="Compras" desc="Lista de alimentos" onClick={() => setIsShoppingOpen(true)} 
-                />
-                
-                <DashboardGridItem 
-                  icon={<Refrigerator />} color="text-sky-500" bgColor="bg-sky-50" 
-                  label="Geladeira" desc="Receitas com o que tem" onClick={() => setIsFridgeOpen(true)} 
-                />
-                <DashboardGridItem 
-                  icon={<Trophy />} color="text-orange-500" bgColor="bg-orange-50" 
-                  label="Conquistas" desc="0/5 desbloqueadas" onClick={() => {
-                    setChallengesInitialTab('achievements');
-                    setIsChallengesOpen(true);
-                  }} 
-                />
-                <DashboardGridItem 
-                  icon={<Star />} color="text-yellow-500" bgColor="bg-yellow-50" 
-                  label="Avaliar o App" desc="Nos dê sua opinião" onClick={() => setIsEvalOpen(true)} 
-                />
+                {/* Action Grid - Responsive columns */}
+                <div className="lg:col-span-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                  <DashboardGridItem 
+                    icon={<Utensils />} color="text-emerald-500" bgColor="bg-emerald-50" 
+                    label="Dieta" desc="Planos personalizados" onClick={() => setIsDietOpen(true)} 
+                  />
+                  <DashboardGridItem 
+                    icon={<BookOpen />} color="text-orange-500" bgColor="bg-orange-50" 
+                    label="Receitas" desc="Deliciosas e saudáveis" onClick={() => setIsRecipesOpen(true)} 
+                  />
+                  <DashboardGridItem 
+                    icon={<Dumbbell />} color="text-emerald-500" bgColor="bg-emerald-50" 
+                    label="Treinos" desc="Exercícios para você" onClick={() => setIsWorkoutOpen(true)} 
+                  />
+                  
+                  <DashboardGridItem 
+                    icon={<Clock />} color="text-emerald-500" bgColor="bg-emerald-50" 
+                    label="Jejum" desc="Acompanhe seu jejum" onClick={() => setIsFastingOpen(true)} 
+                  />
+                  <DashboardGridItem 
+                    icon={<Target />} color="text-emerald-500" bgColor="bg-emerald-50" 
+                    label="Desafios" desc="Supere seus limites" onClick={() => {
+                      setChallengesInitialTab('challenges');
+                      setIsChallengesOpen(true);
+                    }} 
+                  />
+                  <DashboardGridItem 
+                    icon={<ShoppingCart />} color="text-sky-500" bgColor="bg-sky-50" 
+                    label="Compras" desc="Lista de alimentos" onClick={() => setIsShoppingOpen(true)} 
+                  />
+                  
+                  <DashboardGridItem 
+                    icon={<Refrigerator />} color="text-sky-500" bgColor="bg-sky-50" 
+                    label="Geladeira" desc="Receitas com o que tem" onClick={() => setIsFridgeOpen(true)} 
+                  />
+                  <DashboardGridItem 
+                    icon={<Trophy />} color="text-orange-500" bgColor="bg-orange-50" 
+                    label="Conquistas" desc="0/5 desbloqueadas" onClick={() => {
+                      setChallengesInitialTab('achievements');
+                      setIsChallengesOpen(true);
+                    }} 
+                  />
+                  <DashboardGridItem 
+                    icon={<Star />} color="text-yellow-500" bgColor="bg-yellow-50" 
+                    label="Avaliar o App" desc="Nos dê sua opinião" onClick={() => setIsEvalOpen(true)} 
+                  />
+                </div>
               </div>
             </motion.div>
           ) : (
@@ -247,7 +248,7 @@ export const Dashboard: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="w-full"
+              className="w-full px-6"
             >
               <Profile />
             </motion.div>
@@ -256,7 +257,7 @@ export const Dashboard: React.FC = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md z-40 bg-white border-t border-slate-100 p-3 pb-8 shadow-[0_-10px_40px_rgba(0,0,0,0.04)]">
+      <div className="fixed bottom-0 md:bottom-6 left-1/2 -translate-x-1/2 w-full md:max-w-xl z-40 bg-white md:bg-white/80 md:backdrop-blur-xl border-t md:border border-slate-100 md:rounded-[2.5rem] p-3 pb-8 md:pb-3 shadow-[0_-10px_40px_rgba(0,0,0,0.04)] md:shadow-xl md:shadow-slate-200/50">
         <nav className="flex items-center justify-around">
           <BottomNavItem active={activeTab === 'home'} label="Início" icon={<Home />} onClick={() => setActiveTab('home')} />
           <BottomNavItem active={activeTab === 'diet'} label="Dieta" icon={<Utensils />} onClick={() => setIsDietOpen(true)} />

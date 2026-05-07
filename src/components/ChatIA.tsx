@@ -72,7 +72,7 @@ export const ChatIA: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </header>
 
       {/* Content Area */}
-      <div className="p-6 pb-32">
+      <div className="p-6 pb-32 max-w-2xl mx-auto w-full min-h-[calc(100vh-80px)]">
         {isInitialState ? (
           <div className="flex-1 flex flex-col items-center justify-center max-w-sm mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="w-24 h-24 bg-sky-500 rounded-3xl flex items-center justify-center text-white shadow-2xl shadow-sky-500/20 relative overflow-hidden">

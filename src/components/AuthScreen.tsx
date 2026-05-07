@@ -112,25 +112,25 @@ export const AuthScreen: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-bg-light relative overflow-hidden">
-      {/* Background soft glows */}
-      <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary-green/5 rounded-full blur-[120px]" />
-      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-primary-blue/5 rounded-full blur-[120px]" />
+      {/* Background soft glows - More dynamic for desktop */}
+      <div className="absolute -top-24 -left-24 w-96 md:w-[600px] h-96 md:h-[600px] bg-primary-green/10 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute -bottom-24 -right-24 w-96 md:w-[600px] h-96 md:h-[600px] bg-primary-blue/10 rounded-full blur-[120px] animate-pulse delay-1000" />
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md z-10"
+        className="w-full max-w-md md:max-w-lg z-10"
       >
         <div className="text-center mb-10">
-          <p className="text-emerald-600 font-black uppercase tracking-[0.3em] text-xs mb-3">𝗕𝗲𝗺 𝘃𝗶𝗻𝗱𝗼!</p>
-          <h1 className="text-5xl font-black tracking-tighter gradient-text mb-2">𝗟𝗲𝗮𝗻 𝗙𝗶𝘁</h1>
-          <p className="text-slate-500 font-bold tracking-wide leading-relaxed">
+          <p className="text-emerald-600 font-black uppercase tracking-[0.3em] text-xs md:text-sm mb-3">𝗕𝗲𝗺 𝘃𝗶𝗻𝗱𝗼!</p>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter gradient-text mb-4">𝗟𝗲𝗮𝗻 𝗙𝗶𝘁</h1>
+          <p className="text-slate-500 font-bold tracking-wide leading-relaxed md:text-lg">
             𝗥𝗲𝗰𝗲𝗶𝘁𝗮𝘀 • 𝗗𝗶𝗲𝘁𝗮𝘀 • 𝗧𝗿𝗲𝗶𝗻𝗼𝘀<br />
             𝗲 𝗺𝘂𝗶𝘁𝗼 𝗺𝗮𝗶𝘀 💚
           </p>
         </div>
 
-        <div className="glass p-8 rounded-[40px] shadow-2xl shadow-slate-200/60 bg-white/80 backdrop-blur-md">
+        <div className="glass p-8 md:p-12 rounded-[40px] md:rounded-[60px] shadow-2xl shadow-slate-200/60 bg-white/80 backdrop-blur-md border border-white/20">
           <div className="flex p-1 bg-slate-100 rounded-2xl mb-8 border border-slate-200">
             <button 
               onClick={() => handleModeChange('login')}

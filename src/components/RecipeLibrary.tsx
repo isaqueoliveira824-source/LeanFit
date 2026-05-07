@@ -83,7 +83,7 @@ export const RecipeLibrary: React.FC<{ onClose: () => void; isFridge?: boolean }
       exit={{ opacity: 0, y: 50 }}
       className="fixed inset-0 z-50 bg-white overflow-y-auto overflow-x-hidden scroll-smooth"
     >
-      <div className="max-w-2xl mx-auto min-h-full">
+      <div className="max-w-4xl mx-auto min-h-full bg-[#fcfcfc]">
         {/* Header Updated to Compact Style */}
         <header className="px-4 py-4 bg-white flex items-center gap-3 border-b border-slate-50">
           <button onClick={onClose} className="p-2 text-slate-600 active:scale-95 transition-transform flex items-center justify-center">
@@ -215,7 +215,7 @@ export const RecipeLibrary: React.FC<{ onClose: () => void; isFridge?: boolean }
               <p className="text-slate-400 font-medium">Buscando as melhores receitas...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <AnimatePresence mode="popLayout">
                 {filteredRecipes.map((recipe, i) => (
                   <motion.div 

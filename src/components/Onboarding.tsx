@@ -243,56 +243,56 @@ export const Onboarding: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-bg-gray flex flex-col items-center p-6 pt-20">
-      <div className="w-full max-w-lg">
+    <div className="min-h-screen bg-bg-light flex flex-col items-center p-6 pt-20 md:pt-32">
+      <div className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl">
         {step < 5 ? (
           <div className="flex items-center justify-between mb-12">
             <button 
               onClick={handleBack}
               disabled={step === 0}
               className={cn(
-                "p-2 rounded-full transition-all",
+                "p-3 rounded-full transition-all",
                 step === 0 ? "opacity-0 invisible" : "hover:bg-slate-200 text-slate-600"
               )}
             >
-              <ArrowLeft size={24} />
+              <ArrowLeft size={28} />
             </button>
-            <div className="flex gap-1.5">
+            <div className="flex gap-2">
               {[0, 1, 2, 3, 4].map((i) => (
                 <div 
                   key={i} 
                   className={cn(
-                    "h-1.5 rounded-full transition-all duration-500",
-                    i === step ? "w-8 bg-emerald-500" : i < step ? "w-1.5 bg-emerald-300" : "w-1.5 bg-slate-200"
+                    "h-2 rounded-full transition-all duration-500",
+                    i === step ? "w-10 bg-emerald-500" : i < step ? "w-2 bg-emerald-300" : "w-2 bg-slate-200"
                   )} 
                 />
               ))}
             </div>
-            <div className="w-10" />
+            <div className="w-10 md:w-14" />
           </div>
         ) : (
           <div className="mb-8" />
         )}
 
-        <div className="min-h-[440px]">
+        <div className="min-h-[440px] md:min-h-[500px]">
           <AnimatePresence mode="wait">
             {currentStep()}
           </AnimatePresence>
         </div>
 
-        <div className="mt-10">
+        <div className="mt-12 md:max-w-md mx-auto">
           <button
             onClick={handleNext}
             disabled={isNextDisabled()}
             className={cn(
-              "w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]",
+              "w-full py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg",
               isNextDisabled() 
-                ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none" 
-                : "btn-gradient hover:shadow-lg hover:shadow-emerald-200"
+                ? "bg-slate-200 text-slate-400 cursor-not-allowed" 
+                : "btn-gradient hover:shadow-xl hover:shadow-emerald-200"
             )}
           >
             {step === 5 ? 'Começar agora' : 'Próximo'}
-            <ArrowRight size={20} />
+            <ArrowRight size={24} />
           </button>
         </div>
       </div>

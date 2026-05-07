@@ -78,7 +78,7 @@ export const WorkoutLibrary: React.FC<{ onClose: () => void }> = ({ onClose }) =
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="min-h-full"
+            className="min-h-full max-w-5xl mx-auto"
           >
             {/* Header */}
             <header className="px-4 py-4 bg-white flex items-center gap-3 border-b border-slate-50">
@@ -115,7 +115,7 @@ export const WorkoutLibrary: React.FC<{ onClose: () => void }> = ({ onClose }) =
             </div>
 
             {/* Exercise List */}
-            <div className="px-6 pb-24 space-y-4 no-scrollbar">
+            <div className="px-6 pb-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 no-scrollbar">
               {filteredExercises.map((ex, i) => (
                 <div key={`${ex.name}-${i}`} onClick={() => setSelectedExercise(ex)}>
                   <ExerciseCard exercise={ex} />
@@ -190,7 +190,7 @@ const WorkoutDetailView: React.FC<{ exercise: Exercise; onClose: () => void }> =
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className="flex-1 flex flex-col items-center justify-center p-8 relative h-full bg-white"
+      className="flex-1 flex flex-col items-center justify-center p-8 relative min-h-screen bg-white max-w-2xl mx-auto"
     >
       <button 
         onClick={onClose}

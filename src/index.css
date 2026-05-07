@@ -13,8 +13,21 @@
 }
 
 @layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  
   body {
     @apply bg-bg-light text-slate-900 font-sans antialiased overflow-x-hidden;
+    touch-action: manipulation;
+  }
+
+  /* Prevent zoom on input focus in iOS */
+  @media screen and (max-width: 768px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
   }
 }
 
