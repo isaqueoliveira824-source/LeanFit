@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-primary-green: #10b981;
+  --color-primary-blue: #0ea5e9;
+  --color-bg-light: #f8fafc;
+  --color-bg-black: #0f172a;
+  --color-card-light: #ffffff;
+  --color-card-border: rgba(0, 0, 0, 0.05);
+}
+
+@layer base {
+  body {
+    @apply bg-bg-light text-slate-900 font-sans antialiased overflow-x-hidden;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white shadow-xl shadow-slate-200/50 border border-slate-100;
+  }
+
+  .btn-gradient {
+    @apply bg-linear-to-r from-primary-green to-primary-blue text-white font-bold shadow-lg shadow-primary-blue/20 hover:brightness-110 active:scale-95 transition-all;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-linear-to-r from-primary-green to-primary-blue;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+

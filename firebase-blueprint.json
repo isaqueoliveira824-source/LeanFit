@@ -1,0 +1,29 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and settings",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "weight": { "type": "number" },
+        "height": { "type": "number" },
+        "goal": { "type": "string" },
+        "activityLevel": { "type": "string" },
+        "onboardingComplete": { "type": "boolean" },
+        "foodPreferences": { "type": "array" },
+        "healthGoals": { "type": "array" },
+        "weightHistory": { "type": "array" },
+        "dietaryPreferences": { "type": "array" },
+        "dislikedIngredients": { "type": "array" }
+      },
+      "required": ["name", "weight", "height", "goal", "onboardingComplete"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Private user profile data"
+    }
+  }
+}
