@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserProfile, Achievement } from '../types';
 import { INITIAL_ACHIEVEMENTS } from '../constants/achievements';
-import { auth, db } from '../lib/firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
-import { handleFirestoreError, OperationType } from '../lib/firestore-utils';
+// import { auth, db } from '../lib/firebase';
+// import { onAuthStateChanged, signOut } from 'firebase/auth';
+// import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+// import { handleFirestoreError, OperationType } from '../lib/firestore-utils';
 
 interface ShoppingItem {
   id: string;
@@ -77,54 +77,54 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [hasEvaluated, setHasEvaluated] = useState(false);
   const [achievements, setAchievements] = useState<Achievement[]>(INITIAL_ACHIEVEMENTS);
 
-  // Firebase Auth Listener
+  // Firebase Auth Listener - REMOVED
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        setIsAuthenticated(true);
-        // Load user data from Firestore
-        const userRef = doc(db, 'users', firebaseUser.uid);
-        const userDoc = await getDoc(userRef);
-        
-        if (userDoc.exists()) {
-          setUser(userDoc.data() as UserProfile);
-        } else {
-          // If Firestore profile doesn't exist, use basic info from Auth
-          setUser({
-            name: firebaseUser.displayName || 'Membro',
-            weight: 70,
-            height: 170,
-            goal: 'Manter Peso',
-            foodPreferences: [],
-            activityLevel: 'Moderadamente ativo',
-            healthGoals: [],
-            weightHistory: [],
-            dietaryPreferences: [],
-            dislikedIngredients: [],
-            onboardingComplete: false,
-          });
-        }
-      } else {
-        setIsAuthenticated(false);
-        setUser(null);
+    const savedUser = localStorage.getItem('leanfit_user');
+    if (savedUser) {
+      try {
+        const parsed = JSON.parse(savedUser);
+        setUser(parsed);
+      } catch (e) {
+        console.error("Error parsing saved user", e);
       }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    } else {
+      // Default initial profile for new users
+      setUser({
+        name: 'Membro',
+        weight: 70,
+        height: 170,
+        goal: 'Manter Peso',
+        foodPreferences: [],
+        activityLevel: 'Moderadamente ativo',
+        healthGoals: [],
+        weightHistory: [],
+        dietaryPreferences: [],
+        dislikedIngredients: [],
+        onboardingComplete: false,
+      });
+    }
+    setIsAuthenticated(true); // Always authenticated
+    setLoading(false);
   }, []);
+
+  // Save user to localStorage
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('leanfit_user', JSON.stringify(user));
+    }
+  }, [user]);
 
   // Sync consistency achievements
   useEffect(() => {
-    updateAchievement('a4', streak, 'set');
-    updateAchievement('a5', Math.floor(streak / 3), 'set');
-    updateAchievement('a6', streak, 'set');
-  }, [streak]);
+    if (isAuthenticated) {
+      updateAchievement('a4', streak, 'set');
+      updateAchievement('a5', Math.floor(streak / 3), 'set');
+      updateAchievement('a6', streak, 'set');
+    }
+  }, [streak, isAuthenticated]);
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount (only for app state, not auth)
   useEffect(() => {
-    const savedUser = localStorage.getItem('leanfit_user');
-    const authStatus = localStorage.getItem('leanfit_auth');
     const savedShopping = localStorage.getItem('leanfit_shopping');
     const savedFridge = localStorage.getItem('leanfit_fridge');
     const savedDietPlan = localStorage.getItem('leanfit_diet_plan');
@@ -135,26 +135,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const savedHasEvaluated = localStorage.getItem('leanfit_has_evaluated');
     const savedAchievements = localStorage.getItem('leanfit_achievements');
 
-    if (savedUser && authStatus === 'true') {
-      const parsedUser = JSON.parse(savedUser);
-      // Migration: Ensure new fields exist for old sessions
-      const migratedUser = {
-        ...parsedUser,
-        healthGoals: parsedUser.healthGoals || [],
-        weightHistory: parsedUser.weightHistory || [{ date: new Date().toISOString(), weight: parsedUser.weight || 70 }],
-        dietaryPreferences: parsedUser.dietaryPreferences || [],
-        dislikedIngredients: parsedUser.dislikedIngredients || []
-      };
-      setUser(migratedUser);
-      setIsAuthenticated(true);
-      
-      // Auto-calculate water goal if not saved
-      if (!savedWaterGoal) {
-        const base = (migratedUser.weight || 70) * 35;
-        const activityBonus = migratedUser.activityLevel === 'Ativo' ? 500 : migratedUser.activityLevel === 'Muito Ativo' ? 1000 : 0;
-        setWaterGoal(base + activityBonus);
-      }
-    }
     if (savedShopping) {
       try {
         const parsed = JSON.parse(savedShopping);
@@ -180,10 +160,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     }
     if (savedDietType) setDietType(savedDietType);
-    if (savedWaterIntake) setWaterIntake(JSON.parse(savedWaterIntake));
-    if (savedWaterGoal) setWaterGoal(JSON.parse(savedWaterGoal));
-    if (savedWaterStreak) setWaterStreak(JSON.parse(savedWaterStreak));
-    if (savedHasEvaluated) setHasEvaluated(JSON.parse(savedHasEvaluated));
+    if (savedWaterIntake) {
+      try {
+        const parsed = JSON.parse(savedWaterIntake);
+        if (typeof parsed === 'number') setWaterIntake(parsed);
+      } catch (e) { console.error(e); }
+    }
+    if (savedWaterGoal) {
+      try {
+        const parsed = JSON.parse(savedWaterGoal);
+        if (typeof parsed === 'number') setWaterGoal(parsed);
+      } catch (e) { console.error(e); }
+    }
+    if (savedWaterStreak) {
+      try {
+        const parsed = JSON.parse(savedWaterStreak);
+        if (typeof parsed === 'number') setWaterStreak(parsed);
+      } catch (e) { console.error(e); }
+    }
+    if (savedHasEvaluated) {
+      try {
+        const parsed = JSON.parse(savedHasEvaluated);
+        if (typeof parsed === 'boolean') setHasEvaluated(parsed);
+      } catch (e) { console.error(e); }
+    }
     if (savedAchievements) {
       try {
         const parsed = JSON.parse(savedAchievements);
@@ -299,36 +299,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const login = (userData: any) => {
-    // Firebase auth handles this via onAuthStateChanged
-    setIsAuthenticated(true);
     setUser(userData);
+    setIsAuthenticated(true);
   };
 
   const logout = async () => {
-    try {
-      await signOut(auth);
-      setIsAuthenticated(false);
-      setUser(null);
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
+    setLoading(true);
+    localStorage.removeItem('leanfit_user');
+    localStorage.removeItem('leanfit_onboarding_complete');
+    // For complete reset, we might want to clear more, but let's just reset auth state
+    window.location.reload(); 
   };
 
   const updateProfile = async (updatedFields: Partial<UserProfile>) => {
-    if (!user || !auth.currentUser) return;
+    if (!user) return;
     const newProfile = { ...user, ...updatedFields };
     setUser(newProfile);
-    
-    try {
-      await setDoc(doc(db, 'users', auth.currentUser.uid), newProfile, { merge: true });
-    } catch (error) {
-      handleFirestoreError(error, OperationType.UPDATE, `users/${auth.currentUser.uid}`);
-    }
   };
 
   const completeOnboarding = async (profile: Omit<UserProfile, 'onboardingComplete'>) => {
-    if (!auth.currentUser) return;
-    
     const fullProfile = { 
       ...profile, 
       onboardingComplete: true,
@@ -340,12 +329,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setUser(fullProfile);
     updateAchievement('a1', 1, 'set');
-    
-    try {
-      await setDoc(doc(db, 'users', auth.currentUser.uid), fullProfile);
-    } catch (error) {
-      handleFirestoreError(error, OperationType.CREATE, `users/${auth.currentUser.uid}`);
-    }
   };
 
   return (

@@ -275,10 +275,10 @@ export const Profile: React.FC = () => {
       <div className="mt-12 space-y-6 flex flex-col items-center">
          <button 
            onClick={logout}
-           className="w-full md:max-w-md py-6 bg-red-50 text-red-600 border border-red-100 rounded-[2.5rem] font-black text-base uppercase tracking-[0.2em] italic flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-red-500 hover:text-white group shadow-sm"
+           className="w-full md:max-w-md py-6 bg-amber-50 text-amber-600 border border-amber-100 rounded-[2.5rem] font-black text-base uppercase tracking-[0.2em] italic flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-amber-500 hover:text-white group shadow-sm"
          >
-           <LogOut size={24} className="group-hover:-translate-x-1 transition-transform" />
-           SAIR DA CONTA
+           <Trash2 size={24} className="group-hover:-rotate-12 transition-transform" />
+           REINICIAR MEU PERFIL
          </button>
          <p className="text-center text-[10px] text-slate-400 font-black uppercase tracking-[0.3em] italic">𝗟𝗲𝗮𝗻 𝗙𝗶𝘁 v4.0.0 • PEAK PERFORMANCE ⚡</p>
       </div>

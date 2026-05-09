@@ -259,7 +259,7 @@ export const Dashboard: React.FC = () => {
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 md:bottom-6 left-1/2 -translate-x-1/2 w-full md:max-w-xl z-40 bg-white md:bg-white/80 md:backdrop-blur-xl border-t md:border border-slate-100 md:rounded-[2.5rem] p-3 pb-8 md:pb-3 shadow-[0_-10px_40px_rgba(0,0,0,0.04)] md:shadow-xl md:shadow-slate-200/50">
         <nav className="flex items-center justify-around">
-          <BottomNavItem active={activeTab === 'home'} label="Início" icon={<Home />} onClick={() => setActiveTab('home')} />
+          <BottomNavItem key="nav-home" active={activeTab === 'home'} label="Início" icon={<Home />} onClick={() => setActiveTab('home')} />
           <BottomNavItem active={activeTab === 'diet'} label="Dieta" icon={<Utensils />} onClick={() => setIsDietOpen(true)} />
           <BottomNavItem active={activeTab === 'workout'} label="Treinos" icon={<Activity />} onClick={() => setIsWorkoutOpen(true)} />
           <BottomNavItem active={activeTab === 'water'} label="Água" icon={<Droplets />} onClick={() => setIsWaterOpen(true)} />

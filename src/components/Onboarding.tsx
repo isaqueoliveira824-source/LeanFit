@@ -7,10 +7,10 @@ import confetti from 'canvas-confetti';
 import { cn } from '../lib/utils';
 
 export const Onboarding: React.FC = () => {
-  const { completeOnboarding } = useApp();
-  const [step, setStep] = useState(0);
+  const { completeOnboarding, user } = useApp();
+  const [step, setStep] = useState(-1);
   const [formData, setFormData] = useState<Omit<UserProfile, 'onboardingComplete'>>({
-    name: '',
+    name: user?.name && user.name !== 'Membro' ? user.name : '',
     weight: 0,
     height: 0,
     goal: 'Emagrecer',
@@ -21,6 +21,13 @@ export const Onboarding: React.FC = () => {
     dietaryPreferences: [],
     dislikedIngredients: [],
   });
+
+  // Re-sync name if user profile arrives late
+  React.useEffect(() => {
+    if (user?.name && !formData.name && user.name !== 'Membro') {
+      setFormData(prev => ({ ...prev, name: user.name }));
+    }
+  }, [user]);
 
   const foods = [
     { name: 'Carne', icon: <Coffee />, emoji: '🥩' },
@@ -55,7 +62,7 @@ export const Onboarding: React.FC = () => {
   };
 
   const handleBack = () => {
-    if (step > 0) setStep(step - 1);
+    if (step > -1) setStep(step - 1);
   };
 
   const toggleFood = (food: string) => {
@@ -69,6 +76,27 @@ export const Onboarding: React.FC = () => {
 
   const currentStep = () => {
     switch (step) {
+      case -1:
+        return (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.1 }}
+            className="flex flex-col items-center text-center space-y-8 py-10"
+          >
+            <div className="w-32 h-32 bg-emerald-50 rounded-full flex items-center justify-center mb-4 shadow-inner">
+               <span className="text-6xl animate-bounce">🥗</span>
+            </div>
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight leading-tight gradient-text">
+                Seja Bem-vindo ao <br />Lean Fit 💚
+              </h1>
+              <p className="text-slate-500 font-medium text-lg max-w-sm mx-auto leading-relaxed">
+                Estamos felizes em ter você aqui! Vamos preparar seu plano personalizado agora mesmo.
+              </p>
+            </div>
+          </motion.div>
+        );
       case 0:
         return (
           <motion.div 
@@ -245,7 +273,7 @@ export const Onboarding: React.FC = () => {
   return (
     <div className="min-h-screen bg-bg-light flex flex-col items-center p-6 pt-20 md:pt-32">
       <div className="w-full max-w-lg md:max-w-2xl lg:max-w-3xl">
-        {step < 5 ? (
+        {step >= 0 && step < 5 ? (
           <div className="flex items-center justify-between mb-12">
             <button 
               onClick={handleBack}
@@ -271,7 +299,7 @@ export const Onboarding: React.FC = () => {
             <div className="w-10 md:w-14" />
           </div>
         ) : (
-          <div className="mb-8" />
+          <div className={cn("mb-8", step === -1 && "mb-0")} />
         )}
 
         <div className="min-h-[440px] md:min-h-[500px]">
@@ -291,7 +319,7 @@ export const Onboarding: React.FC = () => {
                 : "btn-gradient hover:shadow-xl hover:shadow-emerald-200"
             )}
           >
-            {step === 5 ? 'Começar agora' : 'Próximo'}
+            {step === -1 ? 'Vamos começar' : step === 5 ? 'Começar agora' : 'Próximo'}
             <ArrowRight size={24} />
           </button>
         </div>

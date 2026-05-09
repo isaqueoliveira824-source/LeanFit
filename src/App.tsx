@@ -1,20 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AppProvider, useApp } from './context/AppContext';
-import { AuthScreen } from './components/AuthScreen';
 import { Onboarding } from './components/Onboarding';
 import { Dashboard } from './components/Dashboard';
 import { Scanner } from './components/Scanner';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, user, loading } = useApp();
 
+  console.log('AppContent render:', { isAuthenticated, hasUser: !!user, loading });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-bg-light flex items-center justify-center p-6">
-        <Loader2 className="animate-spin text-primary-green" size={48} />
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="animate-spin text-primary-green" size={48} />
+          <p className="text-slate-400 font-medium text-sm animate-pulse italic">CARREGANDO...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If authenticated but user profile is missing during transition
+  if (isAuthenticated && !user) {
+    return (
+      <div className="min-h-screen bg-bg-light flex items-center justify-center p-6">
+         <div className="flex flex-col items-center gap-4">
+          <Loader2 className="animate-spin text-primary-green" size={48} />
+          <p className="text-slate-400 font-medium text-sm animate-pulse italic">PREPARANDO SEU PERFIL...</p>
+        </div>
       </div>
     );
   }
@@ -24,31 +41,27 @@ const AppContent: React.FC = () => {
       <Route 
         path="/" 
         element={
-          !isAuthenticated ? (
-            <AnimatePresence mode="wait">
-              <AuthScreen key="auth" />
-            </AnimatePresence>
-          ) : !user?.onboardingComplete ? (
-            <AnimatePresence mode="wait">
+          <div className="w-full h-full">
+            {!user?.onboardingComplete ? (
               <Onboarding key="onboarding" />
-            </AnimatePresence>
-          ) : (
-            <AnimatePresence mode="wait">
+            ) : (
               <Dashboard key="dashboard" />
-            </AnimatePresence>
-          )
+            )}
+          </div>
         } 
       />
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
 
 export default function App() {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <ErrorBoundary>
+      <AppProvider>
+        <AppContent />
+      </AppProvider>
+    </ErrorBoundary>
   );
 }
 

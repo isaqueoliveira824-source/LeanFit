@@ -1,6 +1,12 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
+const getAI = () => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not defined");
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 export interface FoodAnalysis {
   name: string;
@@ -20,6 +26,7 @@ export interface FoodAnalysis {
 
 export async function analyzeFood(imageUri: string): Promise<FoodAnalysis> {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: [
@@ -77,6 +84,7 @@ export async function analyzeFood(imageUri: string): Promise<FoodAnalysis> {
 
 export async function chatLeanAI(message: string, userData: any, history: any[] = []) {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: [
@@ -102,6 +110,7 @@ export async function chatLeanAI(message: string, userData: any, history: any[] 
 
 export async function generateRecipes(query: string) {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Gere 3 receitas saudáveis baseadas na busca: "${query}". 
@@ -141,6 +150,7 @@ export async function generateRecipes(query: string) {
 
 export async function generateDietPlan(userData: any) {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Crie um plano alimentar diário personalizado (Café da Manhã, Almoço, Jantar e Lanches).
@@ -171,6 +181,7 @@ export async function generateDietPlan(userData: any) {
 
 export async function generateFridgeRecipes(ingredients: string[]) {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Você é um nutricionista inteligente e especialista em receitas saudáveis.
@@ -244,6 +255,7 @@ Responda em Português no formato JSON.`,
 
 export async function generateWorkouts(query: string, time?: number) {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Gere um treino de ${time || 20} minutos focado em: "${query}". Inclua nome do exercício, tutorial curto e benefícios. Responda em Português.`,
@@ -279,6 +291,7 @@ export async function generateWorkouts(query: string, time?: number) {
 
 export async function generateDailyMotivation() {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: "Gere uma frase de motivação curta e inspiradora (máximo 100 caracteres) em Português focada em saúde, dieta ou exercícios. Não use emojis.",
@@ -292,6 +305,7 @@ export async function generateDailyMotivation() {
 
 export async function generateShoppingList(goal: string, currentItems: string[]) {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Com base no objetivo "${goal}" e considerando que o usuário já tem estes itens em casa: ${currentItems.join(', ')}, gere uma lista de 5 a 10 alimentos saudáveis e essenciais que estão faltando para completar uma dieta balanceada. Responda apenas um array JSON de strings com os nomes dos alimentos. Responda em Português.`,
@@ -312,6 +326,7 @@ export async function generateShoppingList(goal: string, currentItems: string[])
 
 export async function generateFullDiet(profile: any, dietType: string) {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Gere uma dieta personalizada de forma RAPIDA e CONCISA para um usuário com: 
@@ -348,6 +363,7 @@ export async function generateFullDiet(profile: any, dietType: string) {
 
 export async function swapMeal(currentMeal: any, dietType: string) {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Sugira uma alternativa saudável e com calorias similares para esta refeição: ${currentMeal.nome} (${currentMeal.calorias} kcal). 
@@ -380,6 +396,7 @@ export async function swapMeal(currentMeal: any, dietType: string) {
 
 export async function generateDietSuggestion(profile: any, recentHistory?: any) {
   try {
+    const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Com base no perfil do usuário (${profile.goal}, ${profile.weight}kg) e comportamento recente (ex: "tem pulado o jantar"), gere uma dica nutricional curta, motivadora e prática (máximo 100 caracteres). Comece com um emoji. Responda em Português.`,
