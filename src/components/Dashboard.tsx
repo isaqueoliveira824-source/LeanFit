@@ -262,14 +262,14 @@ export const Dashboard: React.FC = () => {
           <BottomNavItem 
             key="nav-home-fixed" 
             active={activeTab === 'home'} 
-            label="Início" 
+            titleText="Início" 
             icon={<Home />} 
             onClick={() => setActiveTab('home')} 
           />
-          <BottomNavItem active={activeTab === 'diet'} label="Dieta" icon={<Utensils />} onClick={() => setIsDietOpen(true)} />
-          <BottomNavItem active={activeTab === 'workout'} label="Treinos" icon={<Activity />} onClick={() => setIsWorkoutOpen(true)} />
-          <BottomNavItem active={activeTab === 'water'} label="Água" icon={<Droplets />} onClick={() => setIsWaterOpen(true)} />
-          <BottomNavItem active={activeTab === 'profile'} label="Perfil" icon={<User />} onClick={() => setActiveTab('profile')} />
+          <BottomNavItem active={activeTab === 'diet'} titleText="Dieta" icon={<Utensils />} onClick={() => setIsDietOpen(true)} />
+          <BottomNavItem active={activeTab === 'workout'} titleText="Treinos" icon={<Activity />} onClick={() => setIsWorkoutOpen(true)} />
+          <BottomNavItem active={activeTab === 'water'} titleText="Água" icon={<Droplets />} onClick={() => setIsWaterOpen(true)} />
+          <BottomNavItem active={activeTab === 'profile'} titleText="Perfil" icon={<User />} onClick={() => setActiveTab('profile')} />
         </nav>
       </div>
 
@@ -311,7 +311,7 @@ const DashboardGridItem: React.FC<{ icon: React.ReactNode; color: string; bgColo
   </button>
 );
 
-const BottomNavItem: React.FC<{ active: boolean; label: string; icon: React.ReactNode; onClick: () => void }> = ({ active, label, icon, onClick }) => (
+const BottomNavItem: React.FC<{ active: boolean; titleText: string; icon: React.ReactNode; onClick: () => void }> = ({ active, titleText, icon, onClick }) => (
   <button 
     onClick={onClick}
     className={cn(
@@ -320,6 +320,6 @@ const BottomNavItem: React.FC<{ active: boolean; label: string; icon: React.Reac
     )}
   >
     {React.cloneElement(icon as React.ReactElement, { size: 22 })}
-    <span className={cn("text-[10px] font-bold", active ? "text-primary-green" : "text-slate-400")}>{label}</span>
+    <span className={cn("text-[10px] font-bold", active ? "text-primary-green" : "text-slate-400")}>{titleText}</span>
   </button>
 );
