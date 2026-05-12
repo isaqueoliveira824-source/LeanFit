@@ -28,6 +28,7 @@ export const WaterTracker: React.FC<{ onClose: () => void }> = ({ onClose }) => 
       });
       setNotificationMsg('Parabéns! Meta de hidratação atingida! 💧');
       setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 5000);
     }
   }, [isGoalReached]);
 

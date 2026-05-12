@@ -1,7 +1,7 @@
 import { Achievement } from '../types';
 
 export const INITIAL_ACHIEVEMENTS: Achievement[] = [
-  { id: 'a1', name: 'Primeiro Passo', description: 'Seu primeiro login no 𝗟𝗲𝗮𝗻 𝗙𝗶𝘁 🚀', icon: '🚀', category: 'Início', current: 1, total: 1, status: 'completed' },
+  { id: 'a1', name: 'Primeiro Passo', description: 'Seu primeiro login no 𝗟𝗲𝗮𝗻 𝗙𝗶𝘁 🚀', icon: '🚀', category: 'Início', current: 0, total: 1, status: 'progress' },
   { id: 'a2', name: 'Hidratação', description: 'Registre seu primeiro copo de água 💧', icon: '💧', category: 'Início', current: 0, total: 1, status: 'progress' },
   { id: 'a3', name: 'Explorador Nutritivo', description: 'Explore a biblioteca de receitas 🥗', icon: '🥗', category: 'Início', current: 0, total: 1, status: 'progress' },
   { id: 'a16', name: 'Crítico Construtivo', description: 'Ajude-nos a melhorar avaliando o app ⭐', icon: '⭐', category: 'Início', current: 0, total: 1, status: 'progress' },

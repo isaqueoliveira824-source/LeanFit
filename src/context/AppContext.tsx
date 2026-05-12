@@ -69,11 +69,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [fridgeItems, setFridgeItems] = useState<string[]>([]);
   const [dietPlan, setDietPlan] = useState<Meal[]>([]);
   const [dietType, setDietType] = useState('Equilibrada');
-  const [consistency, setConsistency] = useState(85);
-  const [streak, setStreak] = useState(12);
+  const [consistency, setConsistency] = useState(0);
+  const [streak, setStreak] = useState(0);
   const [waterIntake, setWaterIntake] = useState(0);
   const [waterGoal, setWaterGoal] = useState(2000);
-  const [waterStreak, setWaterStreak] = useState(3);
+  const [waterStreak, setWaterStreak] = useState(0);
   const [hasEvaluated, setHasEvaluated] = useState(false);
   const [achievements, setAchievements] = useState<Achievement[]>(INITIAL_ACHIEVEMENTS);
 
@@ -116,7 +116,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Sync consistency achievements
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && streak > 0) {
       updateAchievement('a4', streak, 'set');
       updateAchievement('a5', Math.floor(streak / 3), 'set');
       updateAchievement('a6', streak, 'set');

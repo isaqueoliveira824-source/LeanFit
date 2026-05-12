@@ -327,13 +327,22 @@ export async function generateShoppingList(goal: string, currentItems: string[])
 export async function generateFullDiet(profile: any, dietType: string) {
   try {
     const ai = getAI();
+    const prompt = `Você é um nutricionista profissional. Gere um plano alimentar personalizado e completo (Café da manhã, Lanche da manhã, Almoço, Lanche da tarde e Jantar) para um usuário com: 
+      Peso: ${profile.weight}kg, Altura: ${profile.height}cm, Objetivo: ${profile.goal}, Tipo de Dieta: ${dietType}.
+      
+      IMPORTANTE:
+      - Forneça exatamente 5 refeições.
+      - Use os campos exatos: 'type', 'nome', 'amount', 'calorias', 'benefit', 'ingredientes', 'modo_preparo'.
+      - 'modo_preparo' deve ser um array de strings (passos).
+      - 'ingredientes' deve ser um array de strings.
+      - 'calorias' deve ser um NÚMERO.
+      - 'type' deve ser um destes: "Café da manhã", "Almoço", "Jantar", "Lanche".
+      
+      Responda APENAS o JSON.`;
+
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Gere uma dieta personalizada de forma RAPIDA e CONCISA para um usuário com: 
-      Peso: ${profile.weight}kg, Altura: ${profile.height}cm, Objetivo: ${profile.goal}, Tipo de Dieta: ${dietType}.
-      Gere uma refeição para: Café da manhã, Almoço, Jantar e 2 Lanches.
-      Para cada refeição inclua: nome (campo 'nome'), quantidade objetiva (campo 'amount'), calorias (campo 'calorias'), benefício direto (campo 'benefit') e lista de ingredientes (campo 'ingredientes') + passos rápidos (campo 'modo_preparo').
-      Responda em Português no formato JSON. Seja o mais direto possível para agilizar a resposta.`,
+      contents: prompt,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -354,9 +363,13 @@ export async function generateFullDiet(profile: any, dietType: string) {
         }
       }
     });
-    return JSON.parse(response.text);
+
+    const text = response.text;
+    if (!text) throw new Error("Empty response from AI");
+    return JSON.parse(text);
   } catch (error) {
-    console.error("Diet generation failed:", error);
+    console.error("Full diet generation failed:", error);
+    // Return a minimal fallback to avoid UI freezing
     return [];
   }
 }

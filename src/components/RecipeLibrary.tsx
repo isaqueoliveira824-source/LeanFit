@@ -463,6 +463,7 @@ export const RecipeLibrary: React.FC<{ onClose: () => void; isFridge?: boolean }
                   onClick={() => {
                     updateAchievement('a8', 1, 'add');
                     setNotification("Refeição registrada com sucesso! 🥗");
+                    setTimeout(() => setNotification(null), 4000);
                     setSelectedRecipe(null);
                   }}
                   className="w-full py-5 bg-emerald-500 text-white rounded-3xl font-bold shadow-2xl shadow-emerald-500/30 active:scale-95 transition-all text-lg flex items-center justify-center gap-3"
