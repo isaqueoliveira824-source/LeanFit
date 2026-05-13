@@ -49,12 +49,19 @@ export const DietPlan: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const handleGenerateDiet = async (type: string) => {
     setIsLoading(true);
     setSwapOptionsFor(null);
+    setNotification(null);
     try {
       const plan = await generateFullDiet(user, type);
-      updateDietPlan(plan);
-      setDietType(type);
+      if (plan && plan.length > 0) {
+        updateDietPlan(plan);
+        setDietType(type);
+      } else {
+        throw new Error("Plano vazio recebido");
+      }
     } catch (error) {
       console.error(error);
+      setNotification("Ocorreu um erro ao gerar sua dieta. Por favor, verifique sua conexão e tente novamente em instantes.");
+      setTimeout(() => setNotification(null), 6000);
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +164,21 @@ export const DietPlan: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
                 <Loader2 className="animate-spin text-orange-500" size={40} />
-                <p className="text-slate-400 font-bold">Gerando seu plano...</p>
+                <p className="text-slate-400 font-bold">Criação personalizada da IA...</p>
+                <p className="text-[10px] text-slate-300 font-bold uppercase tracking-widest text-center px-10">Isso pode levar alguns segundos enquanto calculamos seus macros</p>
+              </div>
+            ) : dietPlan.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
+                <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center text-slate-300">
+                  <Utensils size={40} />
+                </div>
+                <p className="text-slate-500 font-bold italic">Nenhum plano gerado ainda.</p>
+                <button 
+                  onClick={() => handleGenerateDiet(dietType)}
+                  className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold text-sm shadow-xl active:scale-95 transition-all"
+                >
+                  Gerar Minha Dieta Agora
+                </button>
               </div>
             ) : (
               dietPlan.map((meal, idx) => (

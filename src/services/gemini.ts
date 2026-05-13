@@ -85,6 +85,12 @@ export async function analyzeFood(imageUri: string): Promise<FoodAnalysis> {
 export async function chatLeanAI(message: string, userData: any, history: any[] = []) {
   try {
     const ai = getAI();
+    const systemPrompt = `Você é o "Lean AI", um assistente de saúde e bem-estar amigável, motivador e altamente técnico em nutrição. 
+        Dados do usuário: Peso: ${userData.weight}kg, Altura: ${userData.height}cm, Objetivo: ${userData.goal || 'Saúde geral'}.
+        Responda de forma humana, clara e baseada nos dados do usuário. Foque em dieta, treino e saúde. 
+        Mantenha as respostas concisas e práticas. Use emojis com moderação.`;
+
+    const model = ai.models.get("gemini-3-flash-preview");
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: [
@@ -95,16 +101,15 @@ export async function chatLeanAI(message: string, userData: any, history: any[] 
         { role: 'user', parts: [{ text: message }] }
       ],
       config: {
-        systemInstruction: `Você é o Lean AI, um assistente de saúde e bem-estar amigável e motivador. 
-        Dados do usuário: Peso: ${userData.weight}kg, Altura: ${userData.height}cm, Objetivo: ${userData.goal || 'Saúde geral'}.
-        Responda de forma humana, clara e baseada nos dados do usuário. Foque em dieta, treino e saúde.`,
+        systemInstruction: systemPrompt,
       }
     });
 
+    if (!response.text) throw new Error("Resposta vazia da IA");
     return response.text;
   } catch (error) {
     console.error("Chat failed:", error);
-    return "Desculpe, tive um problema ao processar sua mensagem. Poderia repetir?";
+    return "Desculpe, tive um problema de conexão com meus servidores de IA. Posso tentar de novo? Verifique se sua internet está estável.";
   }
 }
 
@@ -326,19 +331,21 @@ export async function generateShoppingList(goal: string, currentItems: string[])
 
 export async function generateFullDiet(profile: any, dietType: string) {
   try {
+    console.log("Generating full diet for profile:", profile, "and type:", dietType);
     const ai = getAI();
-    const prompt = `Você é um nutricionista profissional. Gere um plano alimentar personalizado e completo (Café da manhã, Lanche da manhã, Almoço, Lanche da tarde e Jantar) para um usuário com: 
-      Peso: ${profile.weight}kg, Altura: ${profile.height}cm, Objetivo: ${profile.goal}, Tipo de Dieta: ${dietType}.
+    const prompt = `Você é um nutricionista profissional e especialista em dietas personalizadas.
+      Gere um plano alimentar diário COMPLETO (Café da manhã, Lanche da manhã, Almoço, Lanche da tarde e Jantar) focado em: ${dietType}.
+      Perfil do paciente: Peso: ${profile.weight}kg, Altura: ${profile.height}cm, Objetivo: ${profile.goal}.
       
-      IMPORTANTE:
-      - Forneça exatamente 5 refeições.
-      - Use os campos exatos: 'type', 'nome', 'amount', 'calorias', 'benefit', 'ingredientes', 'modo_preparo'.
-      - 'modo_preparo' deve ser um array de strings (passos).
-      - 'ingredientes' deve ser um array de strings.
-      - 'calorias' deve ser um NÚMERO.
-      - 'type' deve ser um destes: "Café da manhã", "Almoço", "Jantar", "Lanche".
+      REGRAS PARA O JSON:
+      1. Forneça exatamente 5 refeições.
+      2. Use os campos: 'type', 'nome', 'amount', 'calorias', 'benefit', 'ingredientes', 'modo_preparo'.
+      3. 'modo_preparo' deve ser um ARRAY de strings (passos numerados).
+      4. 'ingredientes' deve ser um ARRAY de strings com quantidades.
+      5. 'calorias' deve ser um NÚMERO INTEIRO.
+      6. 'type' deve ser um destes: "Café da manhã", "Lanche", "Almoço", "Lanche", "Jantar".
       
-      Responda APENAS o JSON.`;
+      Responda APENAS o JSON no formato de array de objetos. Responda em Português.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
@@ -350,7 +357,7 @@ export async function generateFullDiet(profile: any, dietType: string) {
           items: {
             type: Type.OBJECT,
             properties: {
-              type: { type: Type.STRING, enum: ["Café da manhã", "Almoço", "Jantar", "Lanche"] },
+              type: { type: Type.STRING },
               nome: { type: Type.STRING },
               amount: { type: Type.STRING },
               calorias: { type: Type.NUMBER },
@@ -365,12 +372,18 @@ export async function generateFullDiet(profile: any, dietType: string) {
     });
 
     const text = response.text;
-    if (!text) throw new Error("Empty response from AI");
-    return JSON.parse(text);
+    console.log("AI Diet Response Text:", text);
+    if (!text) throw new Error("A IA retornou uma resposta vazia");
+    
+    const parsed = JSON.parse(text);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      throw new Error("Formato de dieta inválido");
+    }
+    return parsed;
   } catch (error) {
     console.error("Full diet generation failed:", error);
-    // Return a minimal fallback to avoid UI freezing
-    return [];
+    // Return empty array to allow UI error handling
+    throw error;
   }
 }
 
@@ -379,10 +392,10 @@ export async function swapMeal(currentMeal: any, dietType: string) {
     const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Sugira uma alternativa saudável e com calorias similares para esta refeição: ${currentMeal.nome} (${currentMeal.calorias} kcal). 
-      O contexto da dieta é ${dietType}. 
-      Responda uma única refeição no mesmo formato JSON: {type, nome, amount, calorias, benefit, ingredientes, modo_preparo}. 
-      Responda em Português.`,
+      contents: `Sugira uma alternativa saudável e com calorias similares (margem de +/- 10%) para esta refeição: ${currentMeal.nome} (${currentMeal.calorias} kcal). 
+      O contexto da dieta é o tipo: ${dietType}. 
+      Responda uma única refeição nova no mesmo formato JSON: {type, nome, amount, calorias, benefit, ingredientes, modo_preparo}. 
+      Use ingredientes simples e acessíveis. Responda APENAS o JSON em Português.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -400,21 +413,23 @@ export async function swapMeal(currentMeal: any, dietType: string) {
         }
       }
     });
-    return JSON.parse(response.text);
+    const text = response.text;
+    if (!text) throw new Error("A IA retornou resposta vazia para troca de refeição");
+    return JSON.parse(text);
   } catch (error) {
     console.error("Meal swap failed:", error);
     return currentMeal;
   }
 }
 
-export async function generateDietSuggestion(profile: any, recentHistory?: any) {
+export async function generateDietSuggestion(profile: any) {
   try {
     const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Com base no perfil do usuário (${profile.goal}, ${profile.weight}kg) e comportamento recente (ex: "tem pulado o jantar"), gere uma dica nutricional curta, motivadora e prática (máximo 100 caracteres). Comece com um emoji. Responda em Português.`,
+      contents: `Com base no perfil do usuário (${profile.goal}, ${profile.weight}kg), gere uma dica nutricional curta, motivadora e muito prática (máximo 80 caracteres). Foque em um hábito alcançável. Comece com um emoji relacionado. Responda em Português.`,
     });
-    return response.text;
+    return response.text || "💡 Mantenha o foco: beber água ajuda a controlar o apetite!";
   } catch (error) {
     return "💡 Mantenha o foco: beber água ajuda a controlar o apetite!";
   }

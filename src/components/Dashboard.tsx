@@ -47,6 +47,9 @@ export const Dashboard: React.FC = () => {
   const [isGeneratingMotivation, setIsGeneratingMotivation] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
+  const unlockedAchievements = achievements.filter(a => a.status === 'completed').length;
+  const totalAchievementsAvailable = achievements.length;
+
   React.useEffect(() => {
     const lastMotivationDate = localStorage.getItem('last_motivation_date');
     const today = new Date().toLocaleDateString();
@@ -230,7 +233,7 @@ export const Dashboard: React.FC = () => {
                   />
                   <DashboardGridItem 
                     icon={<Trophy />} color="text-orange-500" bgColor="bg-orange-50" 
-                    label="Conquistas" desc="0/5 desbloqueadas" onClick={() => {
+                    label="Conquistas" desc={`${unlockedAchievements}/${totalAchievementsAvailable} desbloqueadas`} onClick={() => {
                       setChallengesInitialTab('achievements');
                       setIsChallengesOpen(true);
                     }} 
@@ -320,6 +323,6 @@ const BottomNavItem: React.FC<{ active: boolean; titleText: string; icon: React.
     )}
   >
     {React.cloneElement(icon as React.ReactElement, { size: 22 })}
-    <span className={cn("text-[10px] font-bold", active ? "text-primary-green" : "text-slate-400")}>{titleText}</span>
+    <span translate="no" className={cn("text-[10px] font-bold", active ? "text-primary-green" : "text-slate-400")}>{titleText}</span>
   </button>
 );
