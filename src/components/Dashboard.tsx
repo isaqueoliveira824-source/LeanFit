@@ -26,7 +26,7 @@ import { WaterTracker } from './WaterTracker';
 import { Profile } from './Profile';
 
 export const Dashboard: React.FC = () => {
-  const { user, logout, waterIntake, waterGoal, addWater } = useApp();
+  const { user, logout, waterIntake, waterGoal, addWater, achievements } = useApp();
   const [activeTab, setActiveTab] = useState('home');
   
   // Modal states
