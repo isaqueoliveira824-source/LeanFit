@@ -18,6 +18,9 @@ export default async function handler(
   }
 
   try {
+    const keyExists = !!(process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY);
+    console.log(`[AI API] Request to ${aiPath} - Key configured: ${keyExists}`);
+
     const { 
       analyzeFood, 
       chatLeanAI, 
@@ -30,7 +33,7 @@ export default async function handler(
       generateFullDiet, 
       swapMeal, 
       generateDietSuggestion 
-    } = await import('../src/services/ai.server');
+    } = await import('./ai-logic');
 
     if (method === 'POST') {
       switch (aiPath) {

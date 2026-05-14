@@ -20,7 +20,7 @@ async function startServer() {
   app.post('/api/ai/analyze-food', async (req, res) => {
     try {
       const { imageUri } = req.body;
-      const { analyzeFood } = await import('./src/services/ai.server');
+      const { analyzeFood } = await import('./api/ai-logic');
       const result = await analyzeFood(imageUri);
       res.json(result);
     } catch (error) {
@@ -32,7 +32,7 @@ async function startServer() {
   app.post('/api/ai/chat', async (req, res) => {
     try {
       const { message, userData, history } = req.body;
-      const { chatLeanAI } = await import('./src/services/ai.server');
+      const { chatLeanAI } = await import('./api/ai-logic');
       const result = await chatLeanAI(message, userData, history);
       res.json({ text: result });
     } catch (error) {
@@ -44,7 +44,7 @@ async function startServer() {
   app.post('/api/ai/generate-recipes', async (req, res) => {
     try {
       const { query } = req.body;
-      const { generateRecipes } = await import('./src/services/ai.server');
+      const { generateRecipes } = await import('./api/ai-logic');
       const result = await generateRecipes(query);
       res.json(result);
     } catch (error) {
@@ -56,7 +56,7 @@ async function startServer() {
   app.post('/api/ai/generate-diet', async (req, res) => {
     try {
       const { userData } = req.body;
-      const { generateDietPlan } = await import('./src/services/ai.server');
+      const { generateDietPlan } = await import('./api/ai-logic');
       const result = await generateDietPlan(userData);
       res.json(result);
     } catch (error) {
@@ -68,7 +68,7 @@ async function startServer() {
   app.post('/api/ai/fridge-recipes', async (req, res) => {
     try {
       const { ingredients } = req.body;
-      const { generateFridgeRecipes } = await import('./src/services/ai.server');
+      const { generateFridgeRecipes } = await import('./api/ai-logic');
       const result = await generateFridgeRecipes(ingredients);
       res.json(result);
     } catch (error) {
@@ -80,7 +80,7 @@ async function startServer() {
   app.post('/api/ai/workouts', async (req, res) => {
     try {
       const { query, time } = req.body;
-      const { generateWorkouts } = await import('./src/services/ai.server');
+      const { generateWorkouts } = await import('./api/ai-logic');
       const result = await generateWorkouts(query, time);
       res.json(result);
     } catch (error) {
@@ -91,7 +91,7 @@ async function startServer() {
 
   app.get('/api/ai/motivation', async (req, res) => {
     try {
-      const { generateDailyMotivation } = await import('./src/services/ai.server');
+      const { generateDailyMotivation } = await import('./api/ai-logic');
       const result = await generateDailyMotivation();
       res.json({ text: result });
     } catch (error) {
@@ -103,7 +103,7 @@ async function startServer() {
   app.post('/api/ai/shopping-list', async (req, res) => {
     try {
       const { goal, currentItems } = req.body;
-      const { generateShoppingList } = await import('./src/services/ai.server');
+      const { generateShoppingList } = await import('./api/ai-logic');
       const result = await generateShoppingList(goal, currentItems);
       res.json(result);
     } catch (error) {
@@ -115,7 +115,7 @@ async function startServer() {
   app.post('/api/ai/full-diet', async (req, res) => {
     try {
       const { profile, dietType } = req.body;
-      const { generateFullDiet } = await import('./src/services/ai.server');
+      const { generateFullDiet } = await import('./api/ai-logic');
       const result = await generateFullDiet(profile, dietType);
       res.json(result);
     } catch (error) {
@@ -127,7 +127,7 @@ async function startServer() {
   app.post('/api/ai/swap-meal', async (req, res) => {
     try {
       const { currentMeal, dietType } = req.body;
-      const { swapMeal } = await import('./src/services/ai.server');
+      const { swapMeal } = await import('./api/ai-logic');
       const result = await swapMeal(currentMeal, dietType);
       res.json(result);
     } catch (error) {
@@ -139,7 +139,7 @@ async function startServer() {
   app.post('/api/ai/diet-suggestion', async (req, res) => {
     try {
       const { profile } = req.body;
-      const { generateDietSuggestion } = await import('./src/services/ai.server');
+      const { generateDietSuggestion } = await import('./api/ai-logic');
       const result = await generateDietSuggestion(profile);
       res.json({ text: result });
     } catch (error) {
