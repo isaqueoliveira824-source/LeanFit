@@ -237,7 +237,7 @@ export async function generateWorkouts(query: string, time?: number) {
     const ai = getAI();
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: [{ role: 'user', parts: [{ text: `Gere um treino de ${time || 20} minutos focado em: "${query}". Inclua nome do exercício, tutorial curto e benefícios. Responda em Português.` }]}],
+      contents: [{ role: 'user', parts: [{ text: `Gere um treino de ${time || 20} minutos focado em: "${query}". Para cada exercício, inclua um emoji altamente relevante (ex: 🏃 para corrida, 🧘 para yoga, 🏋️ para força). Responda em Português.` }]}],
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -251,9 +251,10 @@ export async function generateWorkouts(query: string, time?: number) {
                 properties: {
                   name: { type: Type.STRING },
                   tutorial: { type: Type.STRING },
-                  duration: { type: Type.STRING }
+                  duration: { type: Type.STRING },
+                  emoji: { type: Type.STRING }
                 },
-                required: ["name", "tutorial", "duration"]
+                required: ["name", "tutorial", "duration", "emoji"]
               }
             }
           },

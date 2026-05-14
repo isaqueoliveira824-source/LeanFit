@@ -53,7 +53,7 @@ export const WorkoutLibrary: React.FC<{ onClose: () => void }> = ({ onClose }) =
           calories: `${Math.floor(Math.random() * 20) + 5} kcal`,
           difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
           category: 'Personalizado',
-          emoji: '✨'
+          emoji: ex.emoji || '✨'
         }));
         setExercises(prev => [...newExercises, ...prev]);
       }
