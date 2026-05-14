@@ -1,10 +1,12 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 const getAI = () => {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY ou VITE_GEMINI_API_KEY não está definida nas variáveis de ambiente.");
+  const apiKey = (process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY)?.trim();
+  
+  if (!apiKey || apiKey === "MY_GEMINI_API_KEY" || apiKey === "") {
+    throw new Error("GEMINI_API_KEY não configurada. Por favor, adicione sua chave de API do Gemini nas variáveis de ambiente da Vercel ou no arquivo .env.");
   }
+  
   return new GoogleGenAI({ apiKey });
 };
 
