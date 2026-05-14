@@ -183,7 +183,7 @@ export const Scanner: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       className="fixed inset-0 z-50 flex flex-col bg-bg-light text-slate-900 overflow-y-auto"
     >
       {/* Header */}
-      <header className="px-6 py-8 flex flex-col gap-1 bg-bg-light">
+      <header translate="no" className="px-6 py-8 flex flex-col gap-1 bg-bg-light">
         <button onClick={onClose} className="w-10 h-10 -ml-2 rounded-xl glass flex items-center justify-center text-primary-green active:scale-95 transition-transform mb-2">
           <ChevronLeft size={24} />
         </button>

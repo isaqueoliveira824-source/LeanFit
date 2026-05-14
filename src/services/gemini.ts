@@ -27,17 +27,28 @@ export interface FoodAnalysis {
 export async function analyzeFood(imageUri: string): Promise<FoodAnalysis> {
   try {
     const ai = getAI();
+    console.log("Starting AI food analysis...");
+
+    // Extract mimeType and base64 data
+    const matches = imageUri.match(/^data:([^;]+);base64,(.+)$/);
+    if (!matches) {
+      throw new Error("Formato de imagem inválido");
+    }
+    const mimeType = matches[1];
+    const base64Data = matches[2];
+
+    const model = "gemini-1.5-flash";
+    const prompt = "Analise esta imagem de comida. Forneça: Nome, Calorias (por 100g), Macronutrientes, Classificação (saudável, moderada, não recomendada), se pode comer (sim/não) com explicação e 3 alternativas mais saudáveis. Responda em Português.";
+
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: model,
       contents: [
         {
-          inlineData: {
-            mimeType: "image/jpeg",
-            data: imageUri.split(',')[1]
-          }
-        },
-        {
-          text: "Analise esta imagem de comida. Forneça: Nome, Calorias (por 100g), Macronutrientes, Classificação (saudável, moderada, não recomendada), se pode comer (sim/não) com explicação e 3 alternativas mais saudáveis. Responda em Português."
+          role: "user",
+          parts: [
+            { inlineData: { mimeType, data: base64Data } },
+            { text: prompt }
+          ]
         }
       ],
       config: {
@@ -75,7 +86,11 @@ export async function analyzeFood(imageUri: string): Promise<FoodAnalysis> {
       }
     });
 
-    return JSON.parse(response.text || '{}');
+    const text = response.text;
+    console.log("AI Scan Response Received:", text);
+    if (!text) throw new Error("A IA retornou uma resposta vazia");
+    
+    return JSON.parse(text);
   } catch (error) {
     console.error("AI Scan failed:", error);
     throw error;
@@ -90,14 +105,20 @@ export async function chatLeanAI(message: string, userData: any, history: any[] 
         Responda de forma humana, clara e baseada nos dados do usuário. Foque em dieta, treino e saúde. 
         Mantenha as respostas concisas e práticas. Use emojis com moderação.`;
 
-    const model = ai.models.get("gemini-3-flash-preview");
+    // Ensure history starts with a user message and alternates roles
+    const processedHistory = history
+      .filter((h, i) => !(i === 0 && h.role === 'model')) // Skip initial model greeting if present as first item
+      .map(h => ({
+        role: h.role,
+        parts: [{ text: h.text }]
+      }));
+
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-1.5-flash",
       contents: [
-        ...history.map(h => ({
-          role: h.role,
-          parts: [{ text: h.text }]
-        })),
+        { role: 'user', parts: [{ text: `Contexto do Usuário: Peso ${userData.weight}kg, Altura ${userData.height}cm, Objetivo ${userData.goal || 'Saúde'}.` }] },
+        { role: 'model', parts: [{ text: 'Entendido. Como sua Nutricionista IA, estou pronta para ajudar. Em que posso ser útil agora?' }] },
+        ...processedHistory,
         { role: 'user', parts: [{ text: message }] }
       ],
       config: {
@@ -117,10 +138,10 @@ export async function generateRecipes(query: string) {
   try {
     const ai = getAI();
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `Gere 3 receitas saudáveis baseadas na busca: "${query}". 
+      model: "gemini-1.5-flash",
+      contents: [{ role: 'user', parts: [{ text: `Gere 3 receitas saudáveis baseadas na busca: "${query}". 
       Para cada receita inclua: nome (campo 'nome'), calorias (campo 'calorias'), explicacao (uma breve descrição atrativa, campo 'explicacao'), tempo de preparo (ex: 20min), categoria (Café, Almoço, Jantar ou Lanche), 2 tags curtas (ex: Low Carb, Proteína), ingredientes (campo 'ingredientes' como array) e modo de preparo (campo 'modo_preparo' como string ou array). 
-      Responda em Português.`,
+      Responda em Português.` }]}],
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -157,9 +178,9 @@ export async function generateDietPlan(userData: any) {
   try {
     const ai = getAI();
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `Crie um plano alimentar diário personalizado (Café da Manhã, Almoço, Jantar e Lanches).
-      Perfil: Peso ${userData.weight}kg, Altura ${userData.height}cm, Preferências: ${userData.preferences?.join(', ') || 'Nenhuma'}. Responda em Português.`,
+      model: "gemini-1.5-flash",
+      contents: [{ role: 'user', parts: [{ text: `Crie um plano alimentar diário personalizado (Café da Manhã, Almoço, Jantar e Lanches).
+      Perfil: Peso ${userData.weight}kg, Altura ${userData.height}cm, Preferências: ${userData.preferences?.join(', ') || 'Nenhuma'}. Responda em Português.` }]}],
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -188,8 +209,8 @@ export async function generateFridgeRecipes(ingredients: string[]) {
   try {
     const ai = getAI();
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `Você é um nutricionista inteligente e especialista em receitas saudáveis.
+      model: "gemini-1.5-flash",
+      contents: [{ role: 'user', parts: [{ text: `Você é um nutricionista inteligente e especialista em receitas saudáveis.
 O usuário informou os seguintes ingredientes disponíveis na geladeira: ${ingredients.join(', ')}
 
 Sua missão é gerar de 3 a 5 receitas BASEADAS nesses ingredientes de forma rigorosa.
@@ -214,7 +235,7 @@ Para cada receita inclua:
 - modo_preparo: Passo a passo claro
 - ingredientes: Array completo de ingredientes (string[]) para compatibilidade com o sistema.
 
-Responda em Português no formato JSON.`,
+Responda em Português no formato JSON.` }]}],
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -262,8 +283,8 @@ export async function generateWorkouts(query: string, time?: number) {
   try {
     const ai = getAI();
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `Gere um treino de ${time || 20} minutos focado em: "${query}". Inclua nome do exercício, tutorial curto e benefícios. Responda em Português.`,
+      model: "gemini-1.5-flash",
+      contents: [{ role: 'user', parts: [{ text: `Gere um treino de ${time || 20} minutos focado em: "${query}". Inclua nome do exercício, tutorial curto e benefícios. Responda em Português.` }]}],
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -298,8 +319,8 @@ export async function generateDailyMotivation() {
   try {
     const ai = getAI();
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: "Gere uma frase de motivação curta e inspiradora (máximo 100 caracteres) em Português focada em saúde, dieta ou exercícios. Não use emojis.",
+      model: "gemini-1.5-flash",
+      contents: [{ role: 'user', parts: [{ text: "Gere uma frase de motivação curta e inspiradora (máximo 100 caracteres) em Português focada em saúde, dieta ou exercícios. Não use emojis." }]}],
     });
     return response.text.trim();
   } catch (error) {
@@ -312,8 +333,8 @@ export async function generateShoppingList(goal: string, currentItems: string[])
   try {
     const ai = getAI();
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `Com base no objetivo "${goal}" e considerando que o usuário já tem estes itens em casa: ${currentItems.join(', ')}, gere uma lista de 5 a 10 alimentos saudáveis e essenciais que estão faltando para completar uma dieta balanceada. Responda apenas um array JSON de strings com os nomes dos alimentos. Responda em Português.`,
+      model: "gemini-1.5-flash",
+      contents: [{ role: 'user', parts: [{ text: `Com base no objetivo "${goal}" e considerando que o usuário já tem estes itens em casa: ${currentItems.join(', ')}, gere uma lista de 5 a 10 alimentos saudáveis e essenciais que estão faltando para completar uma dieta balanceada. Responda apenas um array JSON de strings com os nomes dos alimentos. Responda em Português.` }]}],
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -348,8 +369,8 @@ export async function generateFullDiet(profile: any, dietType: string) {
       Responda APENAS o JSON no formato de array de objetos. Responda em Português.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: prompt,
+      model: "gemini-1.5-flash",
+      contents: [{ role: 'user', parts: [{ text: prompt }]}],
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -391,11 +412,11 @@ export async function swapMeal(currentMeal: any, dietType: string) {
   try {
     const ai = getAI();
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `Sugira uma alternativa saudável e com calorias similares (margem de +/- 10%) para esta refeição: ${currentMeal.nome} (${currentMeal.calorias} kcal). 
+      model: "gemini-1.5-flash",
+      contents: [{ role: 'user', parts: [{ text: `Sugira uma alternativa saudável e com calorias similares (margem de +/- 10%) para esta refeição: ${currentMeal.nome} (${currentMeal.calorias} kcal). 
       O contexto da dieta é o tipo: ${dietType}. 
       Responda uma única refeição nova no mesmo formato JSON: {type, nome, amount, calorias, benefit, ingredientes, modo_preparo}. 
-      Use ingredientes simples e acessíveis. Responda APENAS o JSON em Português.`,
+      Use ingredientes simples e acessíveis. Responda APENAS o JSON em Português.` }]}],
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -426,8 +447,8 @@ export async function generateDietSuggestion(profile: any) {
   try {
     const ai = getAI();
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: `Com base no perfil do usuário (${profile.goal}, ${profile.weight}kg), gere uma dica nutricional curta, motivadora e muito prática (máximo 80 caracteres). Foque em um hábito alcançável. Comece com um emoji relacionado. Responda em Português.`,
+      model: "gemini-1.5-flash",
+      contents: [{ role: 'user', parts: [{ text: `Com base no perfil do usuário (${profile.goal}, ${profile.weight}kg), gere uma dica nutricional curta, motivadora e muito prática (máximo 80 caracteres). Foque em um hábito alcançável. Comece com um emoji relacionado. Responda em Português.` }]}],
     });
     return response.text || "💡 Mantenha o foco: beber água ajuda a controlar o apetite!";
   } catch (error) {

@@ -125,14 +125,13 @@ export const RecipeLibrary: React.FC<{ onClose: () => void; isFridge?: boolean }
             <div className="space-y-4">
                <div className="flex gap-2">
                  <div className="relative flex-1">
-                   <Refrigerator className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500" size={20} />
                    <input 
                      type="text"
                      value={ingredientInput}
                      onChange={(e) => setIngredientInput(e.target.value)}
                      onKeyPress={(e) => e.key === 'Enter' && addIngredient()}
                      placeholder="Ex: Ovos, Frango..."
-                     className="w-full bg-[#f1f5f9]/80 border-none rounded-2xl pl-12 pr-4 py-5 text-slate-600 font-medium placeholder:text-slate-400 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all shadow-sm"
+                     className="w-full bg-[#f1f5f9]/80 border-none rounded-2xl px-6 py-5 text-slate-600 font-medium placeholder:text-slate-400 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all shadow-sm"
                    />
                  </div>
                  <button 
@@ -186,25 +185,27 @@ export const RecipeLibrary: React.FC<{ onClose: () => void; isFridge?: boolean }
           )}
 
           {/* Categories Scroller */}
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none no-scrollbar">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveCategory(cat);
-                }}
-                className={cn(
-                  "px-6 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all active:scale-95",
-                  activeCategory === cat 
-                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
-                    : "bg-slate-50 text-slate-500 hover:bg-slate-100"
-                )}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+          {!isFridge && (
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none no-scrollbar">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveCategory(cat);
+                  }}
+                  className={cn(
+                    "px-6 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all active:scale-95",
+                    activeCategory === cat 
+                      ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
+                      : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                  )}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Recipes Grid */}

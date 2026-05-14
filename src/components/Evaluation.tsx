@@ -66,7 +66,7 @@ export const Evaluation: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           <div className="w-8 h-8 rounded-lg bg-yellow-50 text-yellow-500 flex items-center justify-center">
             <Star size={18} fill="currentColor" />
           </div>
-          <h2 className="text-lg font-bold text-slate-800 tracking-tight">Avaliar o App</h2>
+          <h2 translate="no" className="text-lg font-bold text-slate-800 tracking-tight">Avaliar o App</h2>
         </div>
       </header>
 
@@ -216,7 +216,7 @@ export const Evaluation: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 onClick={onClose}
                 className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest active:scale-95 transition-all"
               >
-                Voltar ao Início
+                <span translate="no">Voltar ao Início</span>
               </button>
             </motion.div>
           )}

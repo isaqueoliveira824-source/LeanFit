@@ -102,7 +102,7 @@ export const DietPlan: React.FC<{ onClose: () => void }> = ({ onClose }) => {
           <div className="w-8 h-8 bg-emerald-50 text-emerald-500 rounded-lg flex items-center justify-center">
             <Apple size={18} />
           </div>
-          <h2 className="text-lg font-bold text-slate-800 tracking-tight">Plano Alimentar</h2>
+          <h2 translate="no" className="text-lg font-bold text-slate-800 tracking-tight">Plano Alimentar</h2>
         </div>
       </header>
 

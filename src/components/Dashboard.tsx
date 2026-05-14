@@ -78,7 +78,7 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center overflow-y-auto scrollbar-hide pb-24 lg:pb-8">
       {/* Header Section */}
-      <header className="w-full max-w-4xl px-6 py-6 flex items-center justify-between z-50 bg-white md:bg-transparent md:shadow-none md:mt-2">
+      <header translate="no" className="w-full max-w-4xl px-6 py-6 flex items-center justify-between z-50 bg-white md:bg-transparent md:shadow-none md:mt-2">
         <div className="flex items-center gap-3">
           <div>
             <span className="text-slate-400 text-xs font-medium">{getGreeting()},</span>
@@ -261,7 +261,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 md:bottom-6 left-1/2 -translate-x-1/2 w-full md:max-w-xl z-40 bg-white md:bg-white/80 md:backdrop-blur-xl border-t md:border border-slate-100 md:rounded-[2.5rem] p-3 pb-8 md:pb-3 shadow-[0_-10px_40px_rgba(0,0,0,0.04)] md:shadow-xl md:shadow-slate-200/50">
-        <nav className="flex items-center justify-around">
+        <nav translate="no" className="flex items-center justify-around">
           <BottomNavItem 
             key="nav-home-fixed" 
             active={activeTab === 'home'} 

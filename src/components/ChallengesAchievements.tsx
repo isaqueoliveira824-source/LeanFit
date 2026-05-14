@@ -99,7 +99,7 @@ export const ChallengesAchievements: React.FC<{
               <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white">
                 <Trophy size={18} />
               </div>
-              <h2 className="text-lg font-bold text-slate-800 tracking-tight">𝗟𝗲𝗮𝗻 𝗙𝗶𝘁 Rewards</h2>
+              <h2 translate="no" className="text-lg font-bold text-slate-800 tracking-tight">𝗟𝗲𝗮𝗻 𝗙𝗶𝘁 Rewards</h2>
             </div>
           </div>
           <div className="flex bg-slate-100 p-1 rounded-xl">
@@ -191,7 +191,7 @@ export const ChallengesAchievements: React.FC<{
             {/* Achievement Categories */}
             {(['Início', 'Consistência', 'Alimentação', 'Treinos', 'Evolução'] as const).map(cat => (
               <div key={cat} className="space-y-4">
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] px-2">{cat}</h3>
+                <h3 translate="no" className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] px-2">{cat}</h3>
                 <div className="space-y-3">
                   {achievements.filter(a => a.category === cat).map(a => (
                     <motion.div 

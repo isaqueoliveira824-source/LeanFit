@@ -59,7 +59,7 @@ export const ChatIA: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       className="fixed inset-0 z-50 bg-white overflow-y-auto"
     >
       {/* Header */}
-      <header className="px-4 py-4 bg-white flex items-center gap-3 border-b border-slate-50">
+      <header translate="no" className="px-4 py-4 bg-white flex items-center gap-3 border-b border-slate-50">
         <button onClick={onClose} className="p-2 text-slate-600 active:scale-95 transition-transform flex items-center justify-center">
           <ChevronLeft size={24} />
         </button>
@@ -91,10 +91,10 @@ export const ChatIA: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   onClick={() => handleSend(q)}
                   className="w-full p-4 bg-white border border-slate-100 rounded-2xl flex items-center gap-3 text-slate-600 hover:bg-sky-50 hover:border-sky-100 transition-all text-left shadow-sm active:scale-[0.98]"
                 >
-                  <div className="p-2 bg-emerald-50 rounded-lg text-emerald-500">
+                  <div translate="no" className="p-2 bg-emerald-50 rounded-lg text-emerald-500">
                     <Sparkles size={14} />
                   </div>
-                  <span className="text-sm font-medium">{q}</span>
+                  <span translate="no" className="text-sm font-medium">{q}</span>
                 </button>
               ))}
             </div>
@@ -143,7 +143,7 @@ export const ChatIA: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       </div>
 
       {/* Input Field Area */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white shadow-2xl border-t border-slate-50">
+      <div translate="no" className="fixed bottom-0 left-0 right-0 p-6 bg-white shadow-2xl border-t border-slate-50">
         <div className="max-w-2xl mx-auto relative flex items-center gap-3">
           <div className="relative flex-1">
             <input 
