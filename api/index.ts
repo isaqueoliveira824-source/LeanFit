@@ -8,18 +8,26 @@ export default async function handler(
   res: VercelResponse,
 ) {
   const { url, method } = req;
-  const aiPath = url?.replace('/api/ai/', '');
+  if (!url) return res.status(400).json({ error: 'Missing URL' });
 
-  if (!url?.startsWith('/api/ai/')) {
-    if (url === '/api/health') {
+  // Pega o caminho sem os query parameters
+  const pathname = url.split('?')[0];
+  const aiPath = pathname.replace('/api/ai/', '');
+
+  if (!pathname.startsWith('/api/ai/')) {
+    if (pathname === '/api/health') {
        return res.status(200).json({ status: 'ok', service: '𝗟𝗲𝗮𝗻 𝗙𝗶𝘁 API (Vercel)' });
     }
     return res.status(404).json({ error: 'Not Found' });
   }
 
   try {
-    const keyExists = !!(process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY);
-    console.log(`[AI API] Request to ${aiPath} - Key configured: ${keyExists}`);
+    const keyExists = !!(process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY);
+    console.log(`[AI API] Request to ${aiPath} [${method}] - Key configured: ${keyExists}`);
+    
+    if (!keyExists) {
+      console.warn("[AI API] ALERTA: Nenhuma chave de API Gemini encontrada no process.env");
+    }
 
     const { 
       analyzeFood, 

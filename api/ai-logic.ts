@@ -1,10 +1,17 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 const getAI = () => {
-  const apiKey = (process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY)?.trim();
+  // O usuário solicitou especificamente o uso de VITE_GEMINI_API_KEY no app
+  // No backend Node.js (Vercel), acessamos via process.env
+  const apiKey = (
+    process.env.VITE_GEMINI_API_KEY || 
+    process.env.GEMINI_API_KEY || 
+    (typeof process !== 'undefined' ? process.env.API_KEY : undefined)
+  )?.trim();
   
   if (!apiKey || apiKey === "MY_GEMINI_API_KEY" || apiKey === "") {
-    throw new Error("GEMINI_API_KEY não configurada. Por favor, adicione sua chave de API do Gemini nas variáveis de ambiente da Vercel ou no arquivo .env.");
+    console.error("ERRO: VITE_GEMINI_API_KEY ou GEMINI_API_KEY não configurada.");
+    throw new Error("Configuração ausente: VITE_GEMINI_API_KEY não está definida nas variáveis de ambiente. Verifique as configurações na Vercel.");
   }
   
   return new GoogleGenAI({ apiKey });
@@ -17,7 +24,7 @@ export async function analyzeFood(imageUri: string) {
   
   const mimeType = matches[1];
   const base64Data = matches[2];
-  const model = "gemini-1.5-flash";
+  const model = "gemini-3-flash-preview";
   const prompt = "Analise esta imagem de comida. Forneça: Nome, Calorias (por 100g), Macronutrientes, Classificação (saudável, moderada, não recomendada), se pode comer (sim/não) com explicação e 3 alternativas mais saudáveis. Responda em Português.";
 
   const response = await ai.models.generateContent({
@@ -78,7 +85,7 @@ export async function chatLeanAI(message: string, userData: any, history: any[] 
     }));
 
   const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
+    model: "gemini-3-flash-preview",
     contents: [
       { role: 'user', parts: [{ text: `Contexto do Usuário: Peso ${userData.weight}kg, Altura ${userData.height}cm, Objetivo ${userData.goal || 'Saúde'}.` }] },
       { role: 'model', parts: [{ text: 'Entendido. Como sua Nutricionista IA, estou pronta para ajudar com base no seu perfil. Em que posso ser útil agora?' }] },
@@ -86,13 +93,13 @@ export async function chatLeanAI(message: string, userData: any, history: any[] 
     ],
     config: { systemInstruction: systemPrompt }
   });
-  return response.text;
+  return response.text || "";
 }
 
 export async function generateDietPlan(userData: any) {
   const ai = getAI();
   const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
+    model: "gemini-3-flash-preview",
     contents: [{ role: 'user', parts: [{ text: `Crie um plano alimentar diário personalizado (Café da Manhã, Almoço, Jantar e Lanches).
     Perfil: Peso ${userData.weight}kg, Altura ${userData.height}cm, Preferências: ${userData.preferences?.join(', ') || 'Nenhuma'}. Responda em Português.` }]}],
     config: {
@@ -118,7 +125,7 @@ export async function generateDietPlan(userData: any) {
 export async function generateRecipes(query: string) {
   const ai = getAI();
   const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
+    model: "gemini-3-flash-preview",
     contents: [{ role: 'user', parts: [{ text: `Gere 3 receitas saudáveis baseadas na busca: "${query}". 
     Para cada receita inclua: nome (campo 'nome'), calorias (campo 'calorias'), explicacao (uma breve descrição atrativa, campo 'explicacao'), tempo de preparo (ex: 20min), categoria (Café, Almoço, Jantar ou Lanche), 2 tags curtas (ex: Low Carb, Proteína), ingredientes (campo 'ingredientes' como array) e modo de preparo (campo 'modo_preparo' como string ou array). 
     Responda em Português.` }]}],
@@ -163,7 +170,7 @@ export async function generateFullDiet(profile: any, dietType: string) {
     Responda APENAS o JSON no formato de array de objetos. Responda em Português.`;
 
   const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
+    model: "gemini-3-flash-preview",
     contents: [{ role: 'user', parts: [{ text: prompt }]}],
     config: {
       responseMimeType: "application/json",
@@ -191,7 +198,7 @@ export async function generateFullDiet(profile: any, dietType: string) {
 export async function generateFridgeRecipes(ingredients: string[]) {
   const ai = getAI();
   const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
+    model: "gemini-3-flash-preview",
     contents: [{ role: 'user', parts: [{ text: `Você é um nutricionista inteligente e especialista em receitas saudáveis.
 O usuário informou os seguintes ingredientes disponíveis na geladeira: ${ingredients.join(', ')}
 
@@ -248,7 +255,7 @@ Responda em Português no formato JSON.` }]}],
 export async function generateWorkouts(query: string, time?: number) {
   const ai = getAI();
   const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
+    model: "gemini-3-flash-preview",
     contents: [{ role: 'user', parts: [{ text: `Gere um treino de ${time || 20} minutos focado em: "${query}". Inclua nome do exercício, tutorial curto e benefícios. Responda em Português.` }]}],
     config: {
       responseMimeType: "application/json",
@@ -279,16 +286,16 @@ export async function generateWorkouts(query: string, time?: number) {
 export async function generateDailyMotivation() {
   const ai = getAI();
   const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
+    model: "gemini-3-flash-preview",
     contents: [{ role: 'user', parts: [{ text: "Gere uma frase de motivação curta e inspiradora (máximo 100 caracteres) em Português focada em saúde, dieta ou exercícios. Não use emojis." }]}],
   });
-  return response.text.trim();
+  return (response.text || "").trim();
 }
 
 export async function generateShoppingList(goal: string, currentItems: string[]) {
   const ai = getAI();
   const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
+    model: "gemini-3-flash-preview",
     contents: [{ role: 'user', parts: [{ text: `Com base no objetivo "${goal}" e considerando que o usuário já tem estes itens em casa: ${currentItems.join(', ')}, gere uma lista de 5 a 10 alimentos saudáveis e essenciais que estão faltando para completar uma dieta balanceada. Responda apenas um array JSON de strings com os nomes dos alimentos. Responda em Português.` }]}],
     config: {
       responseMimeType: "application/json",
@@ -304,7 +311,7 @@ export async function generateShoppingList(goal: string, currentItems: string[])
 export async function swapMeal(currentMeal: any, dietType: string) {
   const ai = getAI();
   const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
+    model: "gemini-3-flash-preview",
     contents: [{ role: 'user', parts: [{ text: `Sugira uma alternativa saudável e com calorias similares (margem de +/- 10%) para esta refeição: ${currentMeal.nome} (${currentMeal.calorias} kcal). 
     O contexto da dieta é o tipo: ${dietType}. 
     Responda uma única refeição nova no mesmo formato JSON: {type, nome, amount, calorias, benefit, ingredientes, modo_preparo}. 
@@ -332,7 +339,7 @@ export async function swapMeal(currentMeal: any, dietType: string) {
 export async function generateDietSuggestion(profile: any) {
   const ai = getAI();
   const response = await ai.models.generateContent({
-    model: "gemini-1.5-flash",
+    model: "gemini-3-flash-preview",
     contents: [{ role: 'user', parts: [{ text: `Com base no perfil do usuário (${profile.goal}, ${profile.weight}kg), gere uma dica nutricional curta, motivadora e muito prática (máximo 80 caracteres). Foque em um hábito alcançável. Comece com um emoji relacionado. Responda em Português.` }]}],
   });
   return response.text || "💡 Mantenha o foco: beber água ajuda a controlar o apetite!";
