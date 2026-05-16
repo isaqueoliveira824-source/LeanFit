@@ -117,7 +117,7 @@ export const Dashboard: React.FC = () => {
                     <div className="flex-1 min-w-0">
                       <h3 className="text-primary-green font-bold text-xs uppercase tracking-widest leading-tight italic mb-1">Motivação do Dia</h3>
                       <p className="text-sm md:text-base font-medium text-slate-700 leading-tight">
-                         🌟 {motivation}
+                        {motivation}
                       </p>
                     </div>
                     <button 
@@ -156,7 +156,7 @@ export const Dashboard: React.FC = () => {
                         e.stopPropagation();
                         addWater(200);
                       }}
-                      className="w-12 h-12 rounded-full bg-[#1A1A1A] text-white flex items-center justify-center active:scale-90 transition-all ml-4 shrink-0 shadow-lg shadow-black/10"
+                      className="w-12 h-12 rounded-full bg-primary-blue text-white flex items-center justify-center active:scale-90 transition-all ml-4 shrink-0 shadow-lg shadow-sky-500/20"
                     >
                       <Plus size={24} />
                     </button>

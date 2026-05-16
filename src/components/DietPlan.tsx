@@ -87,16 +87,6 @@ export const DietPlan: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     setTimeout(() => setNotification(null), 4000);
   };
 
-  const scrollSelector = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 150;
-      scrollContainerRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
-
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
@@ -161,15 +151,6 @@ export const DietPlan: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             {/* Right Fade Indicator */}
             <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
 
-            {/* Left Arrow */}
-            <button 
-              onClick={() => scrollSelector('left')}
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-900 shadow-xl active:scale-75 hover:bg-slate-50 transition-all opacity-0 group-hover:opacity-100 hidden sm:flex"
-              aria-label="Anterior"
-            >
-              <ChevronLeft size={18} strokeWidth={3} />
-            </button>
-
             {/* Content Container */}
             <div 
               ref={scrollContainerRef}
@@ -196,25 +177,6 @@ export const DietPlan: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                   )}
                 </button>
               ))}
-            </div>
- 
-            {/* Right Arrow */}
-            <button 
-              onClick={() => scrollSelector('right')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-900 shadow-xl active:scale-75 hover:bg-slate-50 transition-all opacity-0 group-hover:opacity-100 hidden sm:flex"
-              aria-label="Próximo"
-            >
-              <ChevronRight size={18} strokeWidth={3} />
-            </button>
-            
-            {/* Mobile Touch Arrows (Always visible but subtler) */}
-            <div className="flex sm:hidden absolute inset-x-0 top-1/2 -translate-y-1/2 justify-between px-2 pointer-events-none">
-              <div className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm shadow-md flex items-center justify-center text-slate-400 opacity-50">
-                <ChevronLeft size={14} strokeWidth={3} />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm shadow-md flex items-center justify-center text-slate-400 opacity-50">
-                <ChevronRight size={14} strokeWidth={3} />
-              </div>
             </div>
           </div>
         </div>
