@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   X, Utensils, RefreshCw, ShoppingCart, 
@@ -25,6 +25,7 @@ export const DietPlan: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [showRecipeModal, setShowRecipeModal] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState<string>("Carregando dica inteligente...");
   const [notification, setNotification] = useState<string | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const dietTypes = [
     { id: 'Emagrecimento', label: 'Emagrecer', icon: '🥗' },
@@ -86,6 +87,16 @@ export const DietPlan: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     setTimeout(() => setNotification(null), 4000);
   };
 
+  const scrollSelector = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 150;
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
@@ -138,23 +149,73 @@ export const DietPlan: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
         {/* Diet Type Selector */}
         <div className="mt-8 space-y-4">
-          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-2">Tipo de Dieta</h3>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-            {dietTypes.map((type) => (
-              <button
-                key={type.id}
-                onClick={() => handleGenerateDiet(type.id)}
-                className={cn(
-                  "px-5 py-3 rounded-2xl text-sm font-bold whitespace-nowrap transition-all border flex items-center gap-2",
-                  dietType === type.id 
-                    ? "bg-slate-900 border-slate-900 text-white shadow-xl" 
-                    : "bg-white border-slate-100 text-slate-500 hover:border-orange-200"
-                )}
-              >
-                <span>{type.icon}</span>
-                {type.label}
-              </button>
-            ))}
+          <div className="flex items-center justify-between px-2">
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">Tipo de Dieta</h3>
+            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">Deslize para ver mais</span>
+          </div>
+          
+          <div className="relative group -mx-2">
+            {/* Left Fade Indicator */}
+            <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-slate-50 to-transparent z-10 pointer-events-none" />
+            
+            {/* Right Fade Indicator */}
+            <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-slate-50 to-transparent z-10 pointer-events-none" />
+
+            {/* Left Arrow */}
+            <button 
+              onClick={() => scrollSelector('left')}
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-900 shadow-xl active:scale-75 hover:bg-slate-50 transition-all opacity-0 group-hover:opacity-100 hidden sm:flex"
+              aria-label="Anterior"
+            >
+              <ChevronLeft size={18} strokeWidth={3} />
+            </button>
+
+            {/* Content Container */}
+            <div 
+              ref={scrollContainerRef}
+              className="flex gap-3 overflow-x-auto no-scrollbar py-3 px-4 relative items-center scroll-smooth shadow-inner-sm"
+            >
+              {dietTypes.map((type) => (
+                <button
+                  key={type.id}
+                  onClick={() => handleGenerateDiet(type.id)}
+                  className={cn(
+                    "px-6 py-4 rounded-2xl text-sm font-bold whitespace-nowrap transition-all border flex items-center gap-3 shrink-0 h-14",
+                    dietType === type.id 
+                      ? "bg-slate-900 border-slate-900 text-white shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3)] scale-105" 
+                      : "bg-white border-slate-100 text-slate-500 hover:border-orange-200 shadow-sm"
+                  )}
+                >
+                  <span className="text-xl filter drop-shadow-sm">{type.icon}</span>
+                  <span>{type.label}</span>
+                  {dietType === type.id && (
+                    <motion.div 
+                      layoutId="activeCircle"
+                      className="w-1.5 h-1.5 rounded-full bg-orange-400" 
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+ 
+            {/* Right Arrow */}
+            <button 
+              onClick={() => scrollSelector('right')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-900 shadow-xl active:scale-75 hover:bg-slate-50 transition-all opacity-0 group-hover:opacity-100 hidden sm:flex"
+              aria-label="Próximo"
+            >
+              <ChevronRight size={18} strokeWidth={3} />
+            </button>
+            
+            {/* Mobile Touch Arrows (Always visible but subtler) */}
+            <div className="flex sm:hidden absolute inset-x-0 top-1/2 -translate-y-1/2 justify-between px-2 pointer-events-none">
+              <div className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm shadow-md flex items-center justify-center text-slate-400 opacity-50">
+                <ChevronLeft size={14} strokeWidth={3} />
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm shadow-md flex items-center justify-center text-slate-400 opacity-50">
+                <ChevronRight size={14} strokeWidth={3} />
+              </div>
+            </div>
           </div>
         </div>
 

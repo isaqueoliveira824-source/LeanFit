@@ -24,12 +24,39 @@ const PRESET_EXERCISES: Exercise[] = [
   { name: 'Prancha', duration: '1 min', calories: '8 kcal', difficulty: 'Fácil', category: 'Força', emoji: '🔥' },
   { name: 'Pular corda', duration: '15 min', calories: '200 kcal', difficulty: 'Médio', category: 'Cardio', emoji: '🤸' },
   { name: 'Burpees', duration: '1 min', calories: '18 kcal', difficulty: 'Difícil', category: 'Cardio', emoji: '🔥' },
-  { name: 'Polichinelos', duration: '1 min', calories: '14 kcal', difficulty: 'Fácil', category: 'Cardio', emoji: '⛹️' },
+  { name: 'Polichinelos', duration: '1 min', calories: '14 kcal', difficulty: 'Fácil', category: 'Cardio', emoji: '🤸' },
   { name: 'Abdominal', duration: '1 min', calories: '10 kcal', difficulty: 'Fácil', category: 'Força', emoji: '🧘' },
   { name: 'Corrida no lugar', duration: '1 min', calories: '14 kcal', difficulty: 'Fácil', category: 'Cardio', emoji: '🏃' },
   { name: 'Jumping Squats', duration: '1 min', calories: '18 kcal', difficulty: 'Difícil', category: 'Força', emoji: '🦘' },
-  { name: 'Escalada no Chão', duration: '1 min', calories: '16 kcal', difficulty: 'Difícil', category: 'Cardio', emoji: '🔥' },
+  { name: 'Escalada no Chão', duration: '1 min', calories: '16 kcal', difficulty: 'Difícil', category: 'Cardio', emoji: '⛰️' },
 ];
+
+const getExerciseEmoji = (name: string, aiEmoji?: string): string => {
+  const n = name.toLowerCase();
+  
+  // Comprehensive mapping
+  if (n.includes('polichinelo') || n.includes('jumping jack')) return '🤸';
+  if (n.includes('flexão') || n.includes('push-up') || n.includes('braço') || n.includes('tríceps') || n.includes('peito')) return '💪';
+  if (n.includes('agachamento') || n.includes('squat') || n.includes('perna') || n.includes('leg')) return '🏋️';
+  if (n.includes('abdominal') || n.includes('crunch') || n.includes('sit-up')) return '🧘';
+  if (n.includes('prancha') || n.includes('plank')) return '🧘';
+  if (n.includes('burpee')) return '🔥';
+  if (n.includes('corrida') || n.includes('run') || n.includes('esteira') || n.includes('treadmill')) return '🏃';
+  if (n.includes('yoga') || n.includes('alongamento') || n.includes('stretch')) return '🧘';
+  if (n.includes('peso') || n.includes('haltere') || n.includes('dumbell') || n.includes('levantamento')) return '🏋️';
+  if (n.includes('bicicleta') || n.includes('cycle') || n.includes('pedal')) return '🚲';
+  if (n.includes('pular') || n.includes('jump')) return '🦘';
+  if (n.includes('escalador') || n.includes('mountain climber')) return '⛰️';
+  if (n.includes('caminhada') || n.includes('walk')) return '🚶';
+  if (n.includes('natação') || n.includes('swim')) return '🏊';
+  if (n.includes('boxe') || n.includes('punch') || n.includes('mismatch')) return '🥊';
+  
+  // If AI provided something useful (not sparkles), use it as a secondary source if our map didn't match
+  if (aiEmoji && aiEmoji !== '✨' && aiEmoji.trim() !== '') return aiEmoji;
+
+  // Strict fallback to avoid sparkles
+  return '💪';
+};
 
 export const WorkoutLibrary: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [search, setSearch] = useState('');
@@ -53,7 +80,7 @@ export const WorkoutLibrary: React.FC<{ onClose: () => void }> = ({ onClose }) =
           calories: `${Math.floor(Math.random() * 20) + 5} kcal`,
           difficulty: ['Fácil', 'Médio', 'Difícil'][Math.floor(Math.random() * 3)] as any,
           category: 'Personalizado',
-          emoji: ex.emoji || '✨'
+          emoji: getExerciseEmoji(ex.name, ex.emoji)
         }));
         setExercises(prev => [...newExercises, ...prev]);
       }
